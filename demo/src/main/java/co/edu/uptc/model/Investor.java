@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import co.edu.uptc.model.enums.RiskProfile;
 
-public class Inversionist {
+public class Investor {
 
     private String id=UUID.randomUUID().toString();
     private String name;
@@ -14,7 +14,7 @@ public class Inversionist {
     private RiskProfile riskProfile;
     private List<Inversion> inversions;
 
-    public Inversionist(String id, String name, String email, double availableCapital, RiskProfile riskProfile,
+    public Investor(String id, String name, String email, double availableCapital, RiskProfile riskProfile,
             List<Inversion> inversions) {
         this.id = id;
         this.name = name;

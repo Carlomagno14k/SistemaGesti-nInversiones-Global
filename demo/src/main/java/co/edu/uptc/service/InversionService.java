@@ -17,13 +17,14 @@ public class InversionService { //Cálculos individuales
         repo=new JsonRepository<>("inversions.json", type);
     }
 
+    //Crear inversion
     public void createInversion(String id, String inversionistId, String assetId, double amount, double purchasePrice, 
             LocalDate date, LocalTime time, double availableCapital, RiskProfile riskProfile, AssetType assetType){
         
-        double purchaseValue = calculatePurchaseValue(purchasePrice, amount);
+        double initialInvestment = calculateInitialInvestment(purchasePrice, amount);
 
         // validar capital
-        if (!validateAvailableCapital(availableCapital, purchaseValue)) {
+        if (!validateAvailableCapital(availableCapital, initialInvestment)) {
             throw new RuntimeException("Insufficient capital");
         }
 
@@ -39,36 +40,39 @@ public class InversionService { //Cálculos individuales
         return repo.findAll();
     } 
 
+    
     public double calculateActualValue(double actualPrice, double amount){ //Calcular Valor Actual
         return actualPrice*amount;
     }
 
-    public double calculatePurchaseValue(double purchasePrice, double amount){  //Calcular Valor de Compra
+    public double calculateInitialInvestment(double purchasePrice, double amount){  //Calcular Valor de Compra
         return purchasePrice*amount;
     };
 
-    public double calculateEarnings(double actualValue, double purchaseValue){  //Calcular Ganancias
-        return actualValue-purchaseValue;
+    public double calculateEarnings(double actualValue, double initialInvestment){  //Calcular Ganancias
+        return actualValue-initialInvestment;
     }
 
-    public double calculatePerformance(double earning, double purchaseValue){   //Calcular Rendimiento
-        if (purchaseValue==0) {
+    //Calcular Pérdida monetaria (Falta)
+
+    //Consultar historial de inversiones de un inversionista (Falta)
+
+    public double calculatePerformance(double earning, double initialInvestment){   //Calcular Rendimiento
+        if (initialInvestment==0) {
             throw new ArithmeticException("Purchase Cannot be Zero");
         }
-        return (earning/purchaseValue)*100;
+        return (earning/initialInvestment)*100;
     }
 
-    public boolean validateAvailableCapital(double availableCapital, double purchaseValue){
-        return availableCapital>=purchaseValue;
+    //No permitir invertir más capital del disponible
+    public boolean validateAvailableCapital(double availableCapital, double initialInvestment){
+        return availableCapital>=initialInvestment;
     }
 
+    //Validar perfil de ries
     public void validateRiskProfile(RiskProfile riskProfile, AssetType assetType){
         if (assetType.getRiskLevel()>riskProfile.getMaxRisk()) {
             throw new RuntimeException("Risk Profile "+riskProfile+" does not allows to investing in "+assetType);
         }
-    }
-
-    public double updateAvailableCapital(double availableCapital, double purchaseValue){
-        return availableCapital-purchaseValue;
     }
 }
