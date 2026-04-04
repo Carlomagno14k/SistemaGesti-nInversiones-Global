@@ -3,103 +3,111 @@ package co.edu.uptc.repository;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.*;
 
-public class JsonRepository<T> implements Repository<T> { //AMBOS TIENEN <T>
+public class JsonRepository<T> implements Repository<T> {
+
     private String filename;
     private Type type;
     private Gson gson;
 
-    private static Gson createGson() {
-        return new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, new TypeAdapter<LocalDate>() {
-                    @Override
-                    public void write(JsonWriter out, LocalDate value) throws IOException {
-                        if (value == null) {
-                            out.nullValue();
-                        } else {
-                            out.value(value.toString());
-                        }
-                    }
-
-                    @Override
-                    public LocalDate read(JsonReader in) throws IOException {
-                        if (in.peek() == JsonToken.NULL) {
-                            in.nextNull();
-                            return null;
-                        }
-                        return LocalDate.parse(in.nextString());
-                    }
-                })
-                .registerTypeAdapter(LocalTime.class, new TypeAdapter<LocalTime>() {
-                    @Override
-                    public void write(JsonWriter out, LocalTime value) throws IOException {
-                        if (value == null) {
-                            out.nullValue();
-                        } else {
-                            out.value(value.toString());
-                        }
-                    }
-
-                    @Override
-                    public LocalTime read(JsonReader in) throws IOException {
-                        if (in.peek() == JsonToken.NULL) {
-                            in.nextNull();
-                            return null;
-                        }
-                        return LocalTime.parse(in.nextString());
-                    }
-                })
-                .create();
-    }
-
     public JsonRepository(String filename, Type type) {
         this.filename = filename;
         this.type = type;
-        this.gson = createGson();
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new JsonSerializer<LocalDate>() {
+                    public JsonElement serialize(LocalDate src, Type typeOfSrc, JsonSerializationContext context) {
+                        return new JsonPrimitive(src.toString());
+                    }
+                })
+                .registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
+                    public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
+                        return LocalDate.parse(json.getAsString());
+                    }
+                })
+                .setPrettyPrinting()
+                .create();
     }
 
-    @Override
-    public void save(T entity) {
-        List<T>data=findAll();
-        data.add(entity);
-        try (FileWriter writer= new FileWriter(filename)){
-            gson.toJson(data,writer);
+    // MÉTODOS AUXILIARES
+    private String getId(T entity) {
+        try {
+            Method method = entity.getClass().getMethod("getId");
+            return (String) method.invoke(entity);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("La entidad no tiene método getId()");
         }
     }
 
-    @Override
-    public List<T> findAll() {
-        try (FileReader reader= new FileReader(filename)){
-            List<T>data=gson.fromJson(reader, type);
-            if (data==null) {
-                return new ArrayList<>();
-            }
-            return data;
-        } catch (Exception e) {
+    private List<T> readFile() {
+        try (FileReader reader = new FileReader(filename)) {
+            List<T> data = gson.fromJson(reader, type);
+            return data != null ? data : new ArrayList<>();
+        } catch (IOException e) {
             return new ArrayList<>();
         }
     }
 
+    private void writeFile(List<T> data) {
+        try (FileWriter writer = new FileWriter(filename)) {
+            gson.toJson(data, writer);
+        } catch (IOException e) {
+            throw new RuntimeException("Error escribiendo archivo JSON");
+        }
+    }
+
+    // CRUD
+    @Override
+    public void save(T entity) {
+        List<T> data = readFile();
+        data.add(entity);
+        writeFile(data);
+    }
+
+    @Override
+    public List<T> findAll() {
+        return readFile();
+    }
+
+    @Override
+    public Optional<T> findById(String id) {
+        return readFile().stream()
+                .filter(e -> getId(e).equals(id))
+                .findFirst();
+    }
+
+    @Override
+    public void update(T entity) {
+        List<T> data = readFile();
+
+        for (int i = 0; i < data.size(); i++) {
+            if (getId(data.get(i)).equals(getId(entity))) {
+                data.set(i, entity);
+                writeFile(data);
+                return;
+            }
+        }
+
+        throw new RuntimeException("Entidad no encontrada para actualizar");
+    }
+
+    @Override
+    public void deleteById(String id) {
+        List<T> data = readFile();
+        data.removeIf(e -> getId(e).equals(id));
+        writeFile(data);
+    }
+
     @Override
     public void replaceAll(List<T> data) {
-        try (FileWriter writer= new FileWriter(filename)){
-            gson.toJson(data,writer);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        writeFile(data);
     }
 }
