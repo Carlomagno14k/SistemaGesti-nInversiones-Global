@@ -17,8 +17,8 @@ import com.google.gson.reflect.TypeToken;
 
 import co.edu.uptc.exception.IncompatibleRiskProfileException;
 import co.edu.uptc.exception.InsufficientCapitalException;
+import co.edu.uptc.model.Asset;
 import co.edu.uptc.model.Investment;
-import co.edu.uptc.service.InvestmentService;
 import co.edu.uptc.model.enums.AssetType;
 import co.edu.uptc.model.enums.RiskProfile;
 import co.edu.uptc.repository.JsonRepository;
@@ -32,9 +32,16 @@ class InvestmentServiceTest {
 
     @BeforeEach
     void setUp() {
+        Type assetType = new TypeToken<List<Asset>>() {}.getType();
+        JsonRepository<Asset> assetRepo = new JsonRepository<>(tempDir.resolve("assets.json").toString(), assetType);
+        AssetService assetService = new AssetService(assetRepo);
+        assetService.createAsset("a-1", "Activo test", AssetType.BOND, 10.0, 0.0);
+        assetService.createAsset("yield-asset", "Yield", AssetType.BOND, 50.0, 0.0);
+
         Type type = new TypeToken<List<Investment>>() {}.getType();
         JsonRepository<Investment> repo1 = new JsonRepository<>(tempDir.resolve("inversions.json").toString(), type);
         service = new InvestmentService(repo1);
+        service.setAssetService(assetService);
     }
 
     @Test
@@ -42,9 +49,9 @@ class InvestmentServiceTest {
         LocalDate d = LocalDate.of(2026, 1, 10);
         LocalTime t = LocalTime.of(10, 0);
 
-        service.createInvestment("op-1", "inv-1", "a-1", 10, 5.0, d, t, 500.0, RiskProfile.MODERATE, AssetType.BOND);
+        service.createInvestment("op-1", "inv-1", "a-1", 10, 50.0, 0.0, 5.0, d, t, 500.0, RiskProfile.MODERATE, AssetType.BOND);
 
-        assertEquals(1, service.listInversions().size());
+        assertEquals(1, service.listInvestments().size());
     }
 
     @Test
@@ -53,7 +60,7 @@ class InvestmentServiceTest {
         LocalTime t = LocalTime.of(10, 0);
 
         assertThrows(InsufficientCapitalException.class,
-                () -> service.createInversion("op-2", "inv-1", "a-1", 10, 5.0, d, t, 10.0, RiskProfile.MODERATE, AssetType.BOND));
+                () -> service.createInvestment("op-2", "inv-1", "a-1", 10, 50.0, 0.0, 5.0, d, t, 10.0, RiskProfile.MODERATE, AssetType.BOND));
     }
 
     @Test
@@ -62,12 +69,15 @@ class InvestmentServiceTest {
         LocalTime t = LocalTime.of(10, 0);
 
         assertThrows(IncompatibleRiskProfileException.class,
-                () -> service.createInversion("op-3", "inv-1", "a-1", 2, 100.0, d, t, 500.0, RiskProfile.CONSERVATIVE, AssetType.CRYPTO));
+                () -> service.createInvestment("op-3", "inv-1", "a-1", 2, 200.0, 0.0, 100.0, d, t, 500.0, RiskProfile.CONSERVATIVE, AssetType.CRYPTO));
     }
 
     @Test
     void calculateActualValue_multipliesPriceByAmount() {
-        assertEquals(100.0, service.calculateActualValue(10.0, 10.0), 0.0001);
+        LocalDate d = LocalDate.of(2026, 1, 10);
+        LocalTime t = LocalTime.NOON;
+        Investment inv = new Investment("x", "inv-1", "a-1", 10, 0.0, 0.0, 5.0, d, t);
+        assertEquals(100.0, service.calculateActualValue(inv), 0.0001);
     }
 
     @Test
@@ -82,14 +92,19 @@ class InvestmentServiceTest {
     }
 
     @Test
-    void calculatePerformance_returnsPercent() {
-        double earning = 50.0 - 40.0;
-        assertEquals(25.0, service.calculatePerformance(earning, 40.0), 0.0001);
+    void calculateYieldPercentage_returnsPercent() {
+        LocalDate d = LocalDate.of(2026, 1, 10);
+        LocalTime t = LocalTime.NOON;
+        Investment inv = new Investment("y", "inv-1", "yield-asset", 1, 0.0, 0.0, 40.0, d, t);
+        assertEquals(25.0, service.calculateYieldPercentage(inv), 0.0001);
     }
 
     @Test
-    void calculatePerformance_throwsWhenInitialZero() {
-        assertThrows(ArithmeticException.class, () -> service.calculatePerformance(0.0, 0.0));
+    void calculateYieldPercentage_returnsZeroWhenPurchasePriceZero() {
+        LocalDate d = LocalDate.of(2026, 1, 10);
+        LocalTime t = LocalTime.NOON;
+        Investment inv = new Investment("z", "inv-1", "a-1", 10, 0.0, 0.0, 0.0, d, t);
+        assertEquals(0.0, service.calculateYieldPercentage(inv), 0.0001);
     }
 
     @Test

@@ -33,6 +33,16 @@ public class JsonRepository<T> implements Repository<T> {
                         return LocalDate.parse(json.getAsString());
                     }
                 })
+                .registerTypeAdapter(LocalTime.class, new JsonSerializer<LocalTime>() {
+                    public JsonElement serialize(LocalTime src, Type typeOfSrc, JsonSerializationContext context) {
+                        return new JsonPrimitive(src.toString());
+                    }
+                })
+                .registerTypeAdapter(LocalTime.class, new JsonDeserializer<LocalTime>() {
+                    public LocalTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
+                        return LocalTime.parse(json.getAsString());
+                    }
+                })
                 .setPrettyPrinting()
                 .create();
     }

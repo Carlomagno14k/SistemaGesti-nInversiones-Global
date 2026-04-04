@@ -31,6 +31,10 @@ public class InvestmentService {
         this.repo = repo;
     }
 
+    public void setAssetService(AssetService assetService) {
+        this.assetService = assetService;
+    }
+
     /**
      * Crea una inversión asociando un inversionista, un activo y la cantidad adquirida (junto al precio
      * de compra y la fecha de la operación). Antes de persistir, comprueba que el capital disponible
