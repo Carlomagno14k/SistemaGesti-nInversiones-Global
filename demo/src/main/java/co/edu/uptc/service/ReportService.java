@@ -19,7 +19,6 @@ public class ReportService {
         Type type = new TypeToken<List<Investment>>() {}.getType();
         this.investmentRepo = new JsonRepository<>("investments.json", type);
     }
-
     
     private LocalDate getDateSafe(Investment inv) {
         return inv.getDate();
