@@ -17,7 +17,7 @@ public class AssetService {
 
     public AssetService() {
         Type type = new TypeToken<List<Asset>>() {}.getType();
-        this.repo = new JsonRepository<>("assets.json", type);
+        this.repo = new JsonRepository<>("demo\\src\\main\\resources\\asset.Json\\", type);
     }
 
     public AssetService(JsonRepository<Asset> repo) {
