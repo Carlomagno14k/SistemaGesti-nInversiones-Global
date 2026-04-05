@@ -58,7 +58,7 @@ public class InvestmentService {
             double yieldPercentage, double purchasePrice, 
             LocalDate date, LocalTime time, double availableCapital, RiskProfile riskProfile, AssetType assetType){
         
-        purchasePrice = calculateInitialInvestment(assetService.findById(assetId).getActualPrice(), amount);
+        purchasePrice = calculatePurchasePrice(assetService.findById(assetId).getActualPrice(), amount);
         currentValue= purchasePrice;
 
         // validar capital
@@ -100,7 +100,7 @@ public class InvestmentService {
      * @param amount cantidad de unidades
      * @return capital invertido inicialmente
      */
-    public double calculateInitialInvestment(double assetPrice, double amount){
+    public double calculatePurchasePrice(double assetPrice, double amount){
         return assetPrice*amount;
     }
 

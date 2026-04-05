@@ -54,7 +54,7 @@ public class PortfolioService {
 
 
                 double actualValue = inversionService.calculateCurrentValue(inv);
-                double purchaseValue = inversionService.calculateInitialInvestment(inv.getPurchasePrice(), inv.getAmount());
+                double purchaseValue = inversionService.calculatePurchasePrice(inv.getPurchasePrice(), inv.getAmount());
 
                 total += inversionService.calculateEarnings(actualValue, purchaseValue);
             }

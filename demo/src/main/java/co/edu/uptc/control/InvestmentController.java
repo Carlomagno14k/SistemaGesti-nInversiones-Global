@@ -160,7 +160,7 @@ public class InvestmentController {
      * Método auxiliar privado para imprimir los detalles de una inversión.
      */
     private void printInvestmentDetails(Investment inv) {
-        double initialInvestment = investmentService.calculateInitialInvestment(inv.getPurchasePrice(), inv.getAmount());
+        double initialInvestment = investmentService.calculatePurchasePrice(inv.getPurchasePrice(), inv.getAmount());
         double earnings = investmentService.calculateEarnings(inv.getCurrentValue(), initialInvestment);
         
         String earningsStr = (earnings >= 0) ? "(+$" + String.format("%.2f", earnings) + ")" : "(-$" + String.format("%.2f", Math.abs(earnings)) + ")";
