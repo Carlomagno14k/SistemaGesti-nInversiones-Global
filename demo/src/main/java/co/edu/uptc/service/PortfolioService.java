@@ -3,14 +3,16 @@ package co.edu.uptc.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import co.edu.uptc.model.Asset;
 import co.edu.uptc.model.Investment;
+import co.edu.uptc.model.Investor;
 
 /**
  * Servicio de agregación de portafolio: cálculos sobre conjuntos de inversiones,
  * como el total de ganancias o pérdidas en un intervalo de fechas (reporte por periodo).
  */
 public class PortfolioService {
-    
+    private InvestorService investorService;
     private InvestmentService inversionService;
     private AssetService assetService;
 
@@ -61,4 +63,57 @@ public class PortfolioService {
         return total;
 
     }
+    public List<Investor> getTop5InvestorsByYield() {
+    List<Investor> allInvestors = investorService.listInversionists();
+
+    return allInvestors.stream()
+            .filter(inv -> inv.getInvestments() != null && !inv.getInvestments().isEmpty())
+            .sorted((inv1, inv2) -> {
+                double yield1 = calculateYieldPercentage(inv1);
+                double yield2 = calculateYieldPercentage(inv2);
+                return Double.compare(yield2, yield1); // Orden descendente
+            })
+            .limit(5)
+            .toList();
+}
+public double calculateTotalInvested(Investor investor) {
+    if (investor.getInvestments() == null || investor.getInvestments().isEmpty()) {
+        return 0.0;
+    }
+    
+    return investor.getInvestments().stream()
+            // Se calcula usando la cantidad y el precio al que se compró originalmente
+            .mapToDouble(investment -> investment.getAmount() * investment.getPurchasePrice())
+            .sum();
+}
+
+public double calculateCurrentPortfolioValue(Investor investor) {
+    if (investor.getInvestments() == null || investor.getInvestments().isEmpty()) {
+        return 0.0;
+    }
+    
+    return investor.getInvestments().stream()
+            .mapToDouble(investment -> {
+                // 1. Buscamos el activo real usando el ID guardado en la inversión
+                Asset asset = assetService.findById(investment.getAssetId());
+                
+                // 2. Si el activo existe, multiplicamos la cantidad que posee por el precio de mercado actual
+                if (asset != null) {
+                    return investment.getAmount() * asset.getActualPrice();
+                }
+                
+                // Si por alguna razón el activo fue eliminado del sistema, no suma valor
+                return 0.0; 
+            })
+            .sum();
+}
+public double calculateYieldPercentage(Investor investor) {
+    double totalInvested = calculateTotalInvested(investor); 
+    double currentValue = calculateCurrentPortfolioValue(investor);
+
+    if (totalInvested == 0) return 0.0;
+    
+    // Formula: ((Valor Actual - Inversion Inicial) / Inversion Inicial) * 100
+    return ((currentValue - totalInvested) / totalInvested) * 100.0;
+}
 }

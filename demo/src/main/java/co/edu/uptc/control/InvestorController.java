@@ -31,17 +31,69 @@ public class InvestorController {
             String email = view.readStringInput("msg.input.investorEmail");
             double capital = view.readDoubleInput("msg.input.availableCapital");
 
-            String riskStr = view.readStringInput("msg.input.riskProfile"); // Ej: CONSERVATIVE, MODERATE, AGRESSIVE
-            RiskProfile riskProfile = RiskProfile.valueOf(riskStr.toUpperCase());
+            String riskStr = view.readStringInput("msg.input.riskProfile").trim().toUpperCase(); 
+            
+            RiskProfile riskProfile;
+            switch (riskStr) {
+                // Si escribe en español o inglés, lo asociamos al Enum correcto
+                case "CONSERVADOR":
+                case "CONSERVATIVE":
+                    riskProfile = RiskProfile.CONSERVATIVE; // Cambia esto si en tu Enum está en español
+                    break;
+                case "MODERADO":
+                case "MODERATE":
+                    riskProfile = RiskProfile.MODERATE;
+                    break;
+                case "AGRESIVO":
+                case "AGGRESSIVE":
+                    riskProfile = RiskProfile.AGRESSIVE;
+                    break;
+                default:
+                    // Si escribe cualquier otra cosa ("hola", "perro", etc.), forzamos el error
+                    throw new IllegalArgumentException("Perfil inválido");
+            }
+
+            // Enviamos la lista vacía al momento de la creación...
 
             // Enviamos la lista vacía al momento de la creación tal como lo requiere tu servicio
             investorService.createInvestor(id, name, email, capital, riskProfile, new ArrayList<>());
             view.showMessageByKey("msg.success.investorCreated");
 
         } catch (IllegalArgumentException e) {
-            view.printText("❌ Error: Perfil de riesgo inválido. Debe ser CONSERVADOR, MODERADO o AGRESIVO.");
+            view.showMessageByKey("msg.error.invalidRisk");
         } catch (RuntimeException e) {
-            view.printText("❌ Error del sistema: " + e.getMessage());
+            view.showMessageByKey("msg.error.system");
+            view.printText(e.getMessage());
+        }
+    }
+
+    /**
+     * Maneja el proceso de inicio de sesión de un inversionista.
+     * @return El ID del inversionista si el login es exitoso, o null si falla/cancela.
+     */
+    public String handleLogin() {
+        view.showMessageByKey("msg.title.login");
+        String id = view.readStringInput("msg.input.loginId");
+        
+        if (id.equalsIgnoreCase("x")) {
+            return null;
+        }
+
+        try {
+            Investor loggedInUser = investorService.findById(id);
+
+            if (loggedInUser != null) {
+                view.showMessageByKey("msg.success.loginWelcome");
+                view.printText("🧑‍💼 " + loggedInUser.getName()); // Imprimimos el nombre justo debajo
+                return loggedInUser.getId(); 
+            } else {
+                view.showMessageByKey("msg.error.loginFailed");
+                return null;
+            }
+        } catch (RuntimeException e) {
+            view.showMessageByKey("msg.error.loginSystem");
+            view.printText(e.getMessage());
+            return null;
         }
     }
 
@@ -52,19 +104,20 @@ public class InvestorController {
         try {
             view.showMessageByKey("msg.title.listInvestors");
             
-            // Usamos tu método listInversionists()
             List<Investor> investors = investorService.listInversionists();
 
             if (investors.isEmpty()) {
                 view.showMessageByKey("msg.error.noInvestors");
             } else {
                 for (Investor inv : investors) {
-                    view.printText(String.format("- [ID: %s] %s | Correo: %s | Capital Disp: $%.2f | Riesgo: %s",
+                    // Cambiamos las palabras en español por términos universales en el formateo de datos
+                    view.printText(String.format("- [ID: %s] %s | Email: %s | Capital: $%.2f | Risk: %s",
                             inv.getId(), inv.getName(), inv.getEmail(), inv.getAvailableCapital(), inv.getRiskProfile()));
                 }
             }
         } catch (RuntimeException e) {
-            view.printText("❌ Error al listar inversionistas: " + e.getMessage());
+            view.showMessageByKey("msg.error.listInvestors");
+            view.printText(e.getMessage());
         }
     }
 
@@ -76,22 +129,20 @@ public class InvestorController {
             view.showMessageByKey("msg.title.updateInvestor");
 
             String id = view.readStringInput("msg.input.investorId");
-            view.printText("ℹ️  (Deja en blanco y presiona Enter si no deseas modificar un campo)");
+            view.showMessageByKey("msg.info.leaveBlank");
 
             String newName = view.readStringInput("msg.input.newName");
             String newEmail = view.readStringInput("msg.input.newEmail");
             String newRiskProfile = view.readStringInput("msg.input.newRiskProfile");
 
-            // Pasamos los textos directo al servicio. Tu lógica en el servicio ignora los vacíos maravillosamente.
             investorService.updateInvestor(id, newName, newEmail, newRiskProfile);
             view.showMessageByKey("msg.success.investorUpdated");
 
-        } catch (InvestorNotFoundException e) {
-            view.printText("❌ " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            view.printText("❌ " + e.getMessage()); // Atrapa el error que lanzaste al validar el Enum
+        } catch (InvestorNotFoundException | IllegalArgumentException e) {
+            view.printText("❌ " + e.getMessage()); 
         } catch (RuntimeException e) {
-            view.printText("❌ Error al actualizar: " + e.getMessage());
+            view.showMessageByKey("msg.error.update");
+            view.printText(e.getMessage());
         }
     }
 
@@ -107,10 +158,11 @@ public class InvestorController {
             if (deleted) {
                 view.showMessageByKey("msg.success.investorDeleted");
             } else {
-                view.printText("❌ No se pudo eliminar: No se encontró un inversionista con ese ID.");
+                view.showMessageByKey("msg.error.deleteNotFound");
             }
         } catch (RuntimeException e) {
-            view.printText("❌ Error al eliminar: " + e.getMessage());
+            view.showMessageByKey("msg.error.delete");
+            view.printText(e.getMessage());
         }
     }
 }

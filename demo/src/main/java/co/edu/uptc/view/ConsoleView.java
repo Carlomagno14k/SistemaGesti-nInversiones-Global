@@ -1,82 +1,119 @@
 package co.edu.uptc.view;
 
+import java.util.InputMismatchException;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
-import java.util.MissingResourceException;
 
 public class ConsoleView {
-    private Scanner scanner;
+    
+    private final Scanner scanner;
     private ResourceBundle messages;
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
-        loadLanguage(Locale.of("es"));
+        loadLanguage("es"); // Español por defecto al iniciar
     }
 
-    public void loadLanguage(Locale locale) {
-        this.messages = ResourceBundle.getBundle("i18n/messages", locale);
+    /**
+     * Carga el archivo de propiedades según el idioma solicitado.
+     * @param lang "es" para español, "en" para inglés.
+     */
+    /**
+     * Carga el archivo de propiedades según el idioma solicitado.
+     * @param lang "es" para español, "en" para inglés.
+     */
+    public void loadLanguage(String lang) {
+        Locale locale = Locale.of(lang); 
+        
+        // Le indicamos que el archivo base "messages" está dentro de la carpeta/paquete "i18n"
+        this.messages = ResourceBundle.getBundle("i18n.messages", locale);
     }
 
-    // ---------------- MENÚS ----------------
-
-    public void showMainMenu() {
-        System.out.println("\n" + messages.getString("menu.title"));
-        System.out.println(messages.getString("menu.option.1"));
-        System.out.println(messages.getString("menu.option.2"));
-        System.out.println(messages.getString("menu.option.3"));
-        System.out.println(messages.getString("menu.option.4"));
-        System.out.println(messages.getString("menu.option.5"));
-        System.out.println(messages.getString("menu.option.0"));
-    }
-
-    // ---------------- LECTURA DE DATOS ----------------
-
-    public int readOption() {
-        System.out.print(messages.getString("msg.input.select") + " ");
-        while (!scanner.hasNextInt()) {
-            System.out.println(messages.getString("msg.error.invalid"));
-            scanner.next(); 
-            System.out.print(messages.getString("msg.input.select") + " ");
+    /**
+     * TRUCO SALVAVIDAS: Intenta buscar la llave en el .properties. 
+     * Si no existe (porque le pasamos un texto normal concatenado), devuelve el texto tal cual.
+     */
+    public String getLocalizedText(String textOrKey) {
+        try {
+            return messages.getString(textOrKey);
+        } catch (MissingResourceException e) {
+            return textOrKey; // Si no es una llave, asume que es texto plano y lo devuelve
         }
-        int option = scanner.nextInt();
-        scanner.nextLine(); // ¡CRUCIAL! Limpia el "Enter" del buffer
-        return option;
     }
 
-    // NUEVO: Método para leer textos (pide la llave de i18n para el mensaje)
+    // ---------------- MÉTODOS DE SALIDA (OUTPUT) ----------------
+
+    public void showMessageByKey(String key) {
+        System.out.println(getLocalizedText(key));
+    }
+
+    public void printText(String text) {
+        System.out.println(getLocalizedText(text));
+    }
+
+    // ---------------- MÉTODOS DE ENTRADA (INPUT) ----------------
+
     public String readStringInput(String promptKey) {
-        System.out.print(messages.getString(promptKey) + " ");
+        System.out.print(getLocalizedText(promptKey) + " ");
         return scanner.nextLine();
     }
 
-    // NUEVO: Método para leer decimales (para los precios)
+    public int readIntInput(String promptKey) {
+        while (true) {
+            try {
+                System.out.print(getLocalizedText(promptKey) + " ");
+                int input = scanner.nextInt();
+                scanner.nextLine(); // Limpiar el "Enter" que queda en el buffer
+                return input;
+            } catch (InputMismatchException e) {
+                System.out.println(getLocalizedText("msg.error.invalid"));
+                scanner.nextLine(); // Limpiar la basura del buffer
+            }
+        }
+    }
+
     public double readDoubleInput(String promptKey) {
-        System.out.print(messages.getString(promptKey) + " ");
-        while (!scanner.hasNextDouble()) {
-            System.out.println(messages.getString("msg.error.invalid"));
-            scanner.next(); 
-            System.out.print(messages.getString(promptKey) + " ");
-        }
-        double value = scanner.nextDouble();
-        scanner.nextLine(); // Limpia el buffer
-        return value;
-    }
-
-    // ---------------- IMPRESIÓN DE MENSAJES ----------------
-
-    // Usa este para mensajes estáticos (como "msg.success.created")
-    public void showMessageByKey(String key) {
-        try {
-            System.out.println(messages.getString(key));
-        } catch (MissingResourceException e) {
-            // Por si te equivocas escribiendo la llave, no se cae el programa
-            System.out.println("!" + key + "!"); 
+        while (true) {
+            try {
+                System.out.print(getLocalizedText(promptKey) + " ");
+                double input = scanner.nextDouble();
+                scanner.nextLine(); // Limpiar el "Enter"
+                return input;
+            } catch (InputMismatchException e) {
+                System.out.println(getLocalizedText("msg.error.invalid"));
+                scanner.nextLine(); // Limpiar la basura del buffer
+            }
         }
     }
 
-    // NUEVO: Usa este para imprimir datos dinámicos (Ej: El listado de activos)
-    public void printText(String text) {
-        System.out.println(text);
+    // ---------------- MENÚS DEL SISTEMA ----------------
+
+    public void showStartMenu() {
+        System.out.println("\n" + getLocalizedText("menu.start.title"));
+        System.out.println(getLocalizedText("menu.start.option.1"));
+        System.out.println(getLocalizedText("menu.start.option.2"));
+        System.out.println(getLocalizedText("menu.start.option.3"));
+        System.out.println(getLocalizedText("menu.start.option.4"));
+        System.out.println(getLocalizedText("menu.start.option.0"));
+    }
+
+    public void showAdminMenu() {
+        System.out.println("\n" + getLocalizedText("menu.title"));
+        System.out.println(getLocalizedText("menu.option.1"));
+        System.out.println(getLocalizedText("menu.option.2"));
+        System.out.println(getLocalizedText("menu.option.3"));
+        System.out.println(getLocalizedText("menu.option.4"));
+        System.out.println(getLocalizedText("menu.option.0"));
+    }
+
+    public void showInvestorDashboard() {
+        System.out.println("\n" + getLocalizedText("menu.investor.title"));
+        System.out.println(getLocalizedText("menu.investor.option.1"));
+        System.out.println(getLocalizedText("menu.investor.option.2"));
+        System.out.println(getLocalizedText("menu.investor.option.3"));
+        System.out.println(getLocalizedText("menu.investor.option.4"));
+        System.out.println(getLocalizedText("menu.investor.option.0"));
     }
 }

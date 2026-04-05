@@ -77,7 +77,7 @@ class InvestmentServiceTest {
         LocalDate d = LocalDate.of(2026, 1, 10);
         LocalTime t = LocalTime.NOON;
         Investment inv = new Investment("x", "inv-1", "a-1", 10, 0.0, 0.0, 5.0, d, t);
-        assertEquals(100.0, service.calculateActualValue(inv), 0.0001);
+        assertEquals(100.0, service.calculateCurrentValue(inv), 0.0001);
     }
 
     @Test

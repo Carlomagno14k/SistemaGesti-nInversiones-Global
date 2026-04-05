@@ -5,6 +5,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import co.edu.uptc.model.Investment;
+import co.edu.uptc.model.Investor;
 import co.edu.uptc.service.InvestmentService;
 import co.edu.uptc.service.PortfolioService;
 import co.edu.uptc.view.ConsoleView;
@@ -20,7 +21,35 @@ public class PortfolioController {
         this.investmentService = investmentService;
         this.view = view;
     }
+public void handleTop5InvestorsReport() {
+    try {
+        view.showMessageByKey("msg.title.top5Investors");
 
+        List<Investor> topInvestors = portfolioService.getTop5InvestorsByYield();
+
+        if (topInvestors.isEmpty()) {
+            view.showMessageByKey("msg.error.notEnoughData");
+            return;
+        }
+
+        int rank = 1;
+        for (Investor inv : topInvestors) {
+            double totalInvested = portfolioService.calculateTotalInvested(inv);
+            double currentValue = portfolioService.calculateCurrentPortfolioValue(inv);
+            double yieldPercent = ((currentValue - totalInvested) / totalInvested) * 100.0;
+
+            // Obtenemos el formato localizado y lo llenamos con los datos del ranking
+            String formattedLine = String.format(view.getLocalizedText("msg.format.topInvestor"), 
+                    rank, inv.getName(), yieldPercent, currentValue);
+            
+            view.printText(formattedLine);
+            rank++;
+        }
+    } catch (RuntimeException e) {
+        view.showMessageByKey("msg.error.system");
+        view.printText(e.getMessage());
+    }
+}
     /**
      * Genera un reporte de ganancias y pérdidas de TODAS las inversiones del sistema en un rango de fechas.
      */
