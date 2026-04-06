@@ -21,16 +21,15 @@ public class MenuController {
         // Servicios únicos
         AssetService assetService = new AssetService();
         InvestorService investorService = new InvestorService();
-        InvestmentService investmentService = new InvestmentService();
-        PortfolioService portfolioService = new PortfolioService(investmentService, assetService);
+        InvestmentService investmentService = new InvestmentService(assetService);
+        PortfolioService portfolioService = new PortfolioService(investmentService, assetService, investorService);
 
         // Controladores inyectados
         this.assetController = new AssetController(assetService, view);
         this.investorController = new InvestorController(investorService, view);
         this.investmentController = new InvestmentController(investmentService, assetService, investorService, view);
-        this.portfolioController = new PortfolioController(portfolioService, investmentService, view);
+        this.portfolioController = new PortfolioController(portfolioService, investmentService, investorService, view);
     }
-
     /**
      * MENÚ DE INICIO (Selector de acceso)
      * Usa tus llaves: menu.start.title, menu.start.option.x
@@ -112,9 +111,15 @@ public class MenuController {
      */
     private void runInvestorPortal() {
         try {
-            // Primero el Login como pediste en tus llaves
-            investorController.handleLogin();
+            // Llamamos a TU método de login
+            String loggedInId = investorController.handleLogin();
             
+            // Si tu método retornó null (porque falló o canceló), cerramos la puerta
+            if (loggedInId == null) {
+                return; 
+            }
+
+            // Si pasó, mostramos el menú...
             boolean logout = false;
             while (!logout) {
                 view.showMessageByKey("menu.investor.title");

@@ -3,7 +3,6 @@ package co.edu.uptc.model;
 import java.util.List;
 
 import co.edu.uptc.model.enums.RiskProfile;
-
 public class Investor {
 
     private String id;

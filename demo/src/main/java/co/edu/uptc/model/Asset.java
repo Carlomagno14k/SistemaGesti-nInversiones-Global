@@ -1,5 +1,7 @@
 package co.edu.uptc.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import co.edu.uptc.model.enums.AssetType;
 
 public class Asset { //Activo

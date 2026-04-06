@@ -7,8 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
-public class JsonRepository<T> {
+// ¡AQUÍ ESTÁ LA MAGIA! Ahora sí implementa la interfaz
+public class JsonRepository<T> implements Repository<T> {
 
     private final String filePath;
     private final Type type;
@@ -22,40 +25,18 @@ public class JsonRepository<T> {
 
     private Gson createGson() {
         return new GsonBuilder()
-
-                //LocalDate
-                .registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
-                    @Override
-                    public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                            throws JsonParseException {
-                        return LocalDate.parse(json.getAsString());
-                    }
-                })
-
-                //LocalTime
-                .registerTypeAdapter(LocalTime.class, new JsonDeserializer<LocalTime>() {
-                    @Override
-                    public LocalTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                            throws JsonParseException {
-                        return LocalTime.parse(json.getAsString());
-                    }
-                })
-
+                .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, typeOfT, context) -> LocalDate.parse(json.getAsString()))
+                .registerTypeAdapter(LocalTime.class, (JsonDeserializer<LocalTime>) (json, typeOfT, context) -> LocalTime.parse(json.getAsString()))
                 .setPrettyPrinting()
                 .create();
     }
 
-    //OBTENER TODOS LOS DATOS
+    @Override
     public List<T> findAll() {
-
         try (Reader reader = new FileReader(filePath)) {
-
             List<T> data = gson.fromJson(reader, type);
-
             return data != null ? data : new ArrayList<>();
-
         } catch (FileNotFoundException e) {
-            // Si el archivo no existe, retorna lista vacía
             return new ArrayList<>();
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,9 +44,7 @@ public class JsonRepository<T> {
         }
     }
 
-    //GUARDAR TODOS LOS DATOS
     public void saveAll(List<T> data) {
-
         try (Writer writer = new FileWriter(filePath)) {
             gson.toJson(data, writer);
         } catch (IOException e) {
@@ -73,16 +52,31 @@ public class JsonRepository<T> {
         }
     }
 
-    //AGREGAR UN ELEMENTO
+    @Override
     public void save(T element) {
-
         List<T> data = findAll();
         data.add(element);
         saveAll(data);
     }
 
-    //ACTUALIZAR
+    @Override
     public void replaceAll(List<T> data) {
         saveAll(data);
+    }
+
+    // NUEVO: Método para buscar genéricamente
+    @Override
+    public Optional<T> findBy(Predicate<T> condition) {
+        return findAll().stream().filter(condition).findFirst();
+    }
+
+    // NUEVO: Método para eliminar genéricamente
+    @Override
+    public void deleteBy(Predicate<T> condition) {
+        List<T> data = findAll();
+        boolean removed = data.removeIf(condition);
+        if (removed) {
+            saveAll(data);
+        }
     }
 }

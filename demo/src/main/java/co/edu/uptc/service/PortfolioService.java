@@ -12,9 +12,9 @@ import co.edu.uptc.model.Investor;
  * como el total de ganancias o pérdidas en un intervalo de fechas (reporte por periodo).
  */
 public class PortfolioService {
-    private InvestorService investorService;
-    private InvestmentService inversionService;
-    private AssetService assetService;
+    private final InvestorService investorService;
+    private final InvestmentService inversionService;
+    private final AssetService assetService;
 
     /**
      * Construye el servicio de portafolio con las dependencias necesarias para valorar
@@ -23,9 +23,10 @@ public class PortfolioService {
      * @param inversionService servicio que aporta fórmulas de valor, inversión inicial y ganancia
      * @param assetService servicio que resuelve el precio actual por activo
      */
-    public PortfolioService(InvestmentService inversionService, AssetService assetService) {
+    public PortfolioService(InvestmentService inversionService, AssetService assetService, InvestorService investorService) {
         this.inversionService = inversionService;
         this.assetService = assetService;
+        this.investorService = investorService; 
     }
 
     /**
@@ -77,36 +78,29 @@ public class PortfolioService {
             .toList();
 }
 public double calculateTotalInvested(Investor investor) {
-    if (investor.getInvestments() == null || investor.getInvestments().isEmpty()) {
-        return 0.0;
+        if (investor.getInvestments() == null || investor.getInvestments().isEmpty()) {
+            return 0.0;
+        }
+        return investor.getInvestments().stream()
+                .mapToDouble(investment -> investment.getAmount() * investment.getPurchasePrice())
+                .sum();
     }
-    
-    return investor.getInvestments().stream()
-            // Se calcula usando la cantidad y el precio al que se compró originalmente
-            .mapToDouble(investment -> investment.getAmount() * investment.getPurchasePrice())
-            .sum();
-}
+    public double calculateCurrentPortfolioValue(Investor investor) {
+        if (investor.getInvestments() == null || investor.getInvestments().isEmpty()) {
+            return 0.0;
+        }
+        
+        return investor.getInvestments().stream()
+                .mapToDouble(investment -> {
+                    Asset asset = assetService.findById(investment.getAssetId());
+                    if (asset != null) {
+                        return investment.getAmount() * asset.getActualPrice();
+                    }
+                    return 0.0; 
+                })
+                .sum();
+    }
 
-public double calculateCurrentPortfolioValue(Investor investor) {
-    if (investor.getInvestments() == null || investor.getInvestments().isEmpty()) {
-        return 0.0;
-    }
-    
-    return investor.getInvestments().stream()
-            .mapToDouble(investment -> {
-                // 1. Buscamos el activo real usando el ID guardado en la inversión
-                Asset asset = assetService.findById(investment.getAssetId());
-                
-                // 2. Si el activo existe, multiplicamos la cantidad que posee por el precio de mercado actual
-                if (asset != null) {
-                    return investment.getAmount() * asset.getActualPrice();
-                }
-                
-                // Si por alguna razón el activo fue eliminado del sistema, no suma valor
-                return 0.0; 
-            })
-            .sum();
-}
 public double calculateYieldPercentage(Investor investor) {
     double totalInvested = calculateTotalInvested(investor); 
     double currentValue = calculateCurrentPortfolioValue(investor);
@@ -116,4 +110,26 @@ public double calculateYieldPercentage(Investor investor) {
     // Formula: ((Valor Actual - Inversion Inicial) / Inversion Inicial) * 100
     return ((currentValue - totalInvested) / totalInvested) * 100.0;
 }
+public double calculatePortfolioRisk(Investor investor) {
+        double totalValue = calculateCurrentPortfolioValue(investor);
+        
+        // Evitamos división por cero si el portafolio está vacío
+        if (totalValue == 0) return 0.0;
+
+        double weightedRiskSum = 0.0;
+        
+        List<Investment> investments = investor.getInvestments();
+        if (investments != null) {
+            for (Investment inv : investments) {
+                Asset asset = assetService.findById(inv.getAssetId());
+                if (asset != null) {
+                    double currentInvValue = inv.getAmount() * asset.getActualPrice();
+                    // Multiplicamos el valor que tiene invertido por la volatilidad (riesgo) de ese activo
+                    weightedRiskSum += (currentInvValue * asset.getVolatility());
+                }
+            }
+        }
+        // Dividimos entre el total para sacar el promedio ponderado
+        return weightedRiskSum / totalValue;
+    }
 }

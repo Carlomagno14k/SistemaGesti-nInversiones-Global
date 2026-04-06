@@ -71,7 +71,7 @@ public class InvestorController {
 
             if (loggedInUser != null) {
                 view.showMessageByKey("msg.success.loginWelcome");
-                view.printText(loggedInUser.getName()); // Emoji removido
+                view.printText(loggedInUser.getName()); 
                 return loggedInUser.getId(); 
             } else {
                 view.showMessageByKey("msg.error.loginFailed");

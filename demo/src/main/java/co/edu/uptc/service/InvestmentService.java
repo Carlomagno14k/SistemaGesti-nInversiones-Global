@@ -21,17 +21,14 @@ import co.edu.uptc.repository.JsonRepository;
  */
 public class InvestmentService {
     private final JsonRepository<Investment> repo;
-    private AssetService assetService;
-    public InvestmentService() {
+    private final AssetService assetService;
+    public InvestmentService(AssetService assetService) {
         Type type = new TypeToken<List<Investment>>() {}.getType();
-        this.repo = new JsonRepository<>("demo\\src\\main\\resources\\persistence\\investment.json\\", type);
+        this.repo = new JsonRepository<>("demo\\src\\main\\resources\\persistence\\investment.json", type);
+        this.assetService = assetService;
     }
-
-    public InvestmentService(JsonRepository<Investment> repo) {
+    public InvestmentService(JsonRepository<Investment> repo, AssetService assetService) {
         this.repo = repo;
-    }
-
-    public void setAssetService(AssetService assetService) {
         this.assetService = assetService;
     }
 

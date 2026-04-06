@@ -3,7 +3,7 @@
     "id": "A1",
     "name": "Bono del Estado 2030",
     "assetType": "BOND",
-    "actualPrice": 1000.0,
+    "actualPrice": 2.2222222222222223E20,
     "volatility": 0.02
   },
   {
@@ -15,10 +15,10 @@
   },
   {
     "id": "A3",
-    "name": "ETF S&P 500",
+    "name": "ETF S\u0026P 500",
     "assetType": "ETF",
     "actualPrice": 420.75,
-    "volatility": 0.10
+    "volatility": 0.1
   },
   {
     "id": "A4",
@@ -46,7 +46,7 @@
     "name": "NFT Arte Digital #1",
     "assetType": "NFT",
     "actualPrice": 3000.0,
-    "volatility": 0.50
+    "volatility": 0.5
   },
   {
     "id": "A8",
@@ -67,6 +67,6 @@
     "name": "Ethereum",
     "assetType": "CRYPTO",
     "actualPrice": 3200.0,
-    "volatility": 0.30
+    "volatility": 0.3
   }
 ]
