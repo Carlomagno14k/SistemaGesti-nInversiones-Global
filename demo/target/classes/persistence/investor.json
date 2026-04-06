@@ -395,19 +395,17 @@
     "id": "I013",
     "name": "Juan David Cardenas",
     "email": "juandavid@gmail.com",
-    "availableCapital": 1963000.0,
+    "availableCapital": 1958000.0,
     "riskProfile": "CONSERVATIVE",
     "investments": [
       {
-        "id": "INV071",
+        "id": "INV070",
         "inversionistId": "I013",
         "assetId": "A1",
         "amount": 5.0,
-        "currentValue": 5000.0,
-        "YieldPercentage": 0.0,
         "purchasePrice": 5000.0,
         "date": "2026-04-06",
-        "time": "10:10:00.196725900"
+        "time": "10:45:41.142450300"
       }
     ]
   }

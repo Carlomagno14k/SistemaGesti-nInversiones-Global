@@ -57,13 +57,11 @@ public class InvestmentController {
             }
 
             double purchasePrice = asset.getActualPrice();
-            double currentValue = purchasePrice * amount; 
-            double yieldPercentage = 0.0; 
             LocalDate date = LocalDate.now();
             LocalTime time = LocalTime.now();
 
             Investment inv= investmentService.createInvestment(
-                investmentId, investorId, assetId, amount, currentValue, yieldPercentage, 
+                investmentId, investorId, assetId, amount,
                 purchasePrice, date, time, 
                 investor.getAvailableCapital(), investor.getRiskProfile(), asset.getAssetType()
             );
@@ -183,11 +181,8 @@ public class InvestmentController {
      */
     private void printInvestmentDetails(Investment inv) {
 
-        // 🔹 Obtener precio actual REAL del activo
-        double currentPrice = assetService.getPrice(inv.getAssetId());
-    
-        // 🔹 Calcular valor actual dinámico
-        double currentValue = currentPrice * inv.getAmount();
+        // 🔹 Calcular métricas derivadas de forma dinámica en tiempo real
+        double currentValue = investmentService.calculateCurrentValue(inv);
     
         // 🔹 Inversión inicial (ya viene calculada correctamente)
         double initialInvestment = inv.getPurchasePrice();
@@ -196,10 +191,7 @@ public class InvestmentController {
         double earnings = currentValue - initialInvestment;
     
         // 🔹 Rendimiento %
-        double yield = 0.0;
-        if (initialInvestment > 0) {
-            yield = (earnings / initialInvestment) * 100;
-        }
+        double yield = investmentService.calculateYieldPercentage(inv);
     
         String earningsStr = (earnings >= 0)
             ? "(+$" + String.format("%.2f", earnings) + ")"
