@@ -102,10 +102,9 @@ public class PortfolioController {
     /**
      * Genera un reporte de ganancias y pérdidas de UN SOLO INVERSIONISTA en un rango de fechas.
      */
-    public void handleInvestorEarningsReport() {
+    public void handleInvestorEarningsReport(String investorId) {
         try {
             view.showMessageByKey("msg.title.investorReport");
-            String investorId = view.readStringInput("msg.input.investorId");
             
             Investor investor = investorService.findById(investorId);
             if (investor == null) {

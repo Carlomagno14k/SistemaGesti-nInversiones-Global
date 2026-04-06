@@ -5,7 +5,17 @@
     "email": "investor1@email.com",
     "availableCapital": 10000.0,
     "riskProfile": "CONSERVATIVE",
-    "investments": []
+    "investments": [ {
+    "id": "INV1",
+    "inversionistId": "I1",
+    "assetId": "A1",
+    "amount": 5,
+    "purchasePrice": 5000,
+    "currentValue": 6000,
+    "yieldPercentage": 20.0,
+    "date": "2024-01-10",
+    "time": "10:30"
+  }]
   },
   {
     "id": "I2",
@@ -397,18 +407,6 @@
     "email": "juandavid@gmail.com",
     "availableCapital": 1963000.0,
     "riskProfile": "CONSERVATIVE",
-    "investments": [
-      {
-        "id": "INV071",
-        "inversionistId": "I013",
-        "assetId": "A1",
-        "amount": 5.0,
-        "currentValue": 5000.0,
-        "YieldPercentage": 0.0,
-        "purchasePrice": 5000.0,
-        "date": "2026-04-06",
-        "time": "10:10:00.196725900"
-      }
-    ]
+    "investments": []
   }
 ]

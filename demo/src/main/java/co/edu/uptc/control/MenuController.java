@@ -127,15 +127,15 @@ public class MenuController {
                 view.showMessageByKey("menu.investor.option.2");
                 view.showMessageByKey("menu.investor.option.3");
                 view.showMessageByKey("menu.investor.option.4");
-                view.showMessageByKey("menu.investor.option.0");
+                view.showMessageByKey("menu.investor.option.0/n");
 
                 int option = view.readIntInput("msg.input.select");
 
                 switch (option) {
                     case 1: assetController.handleListAssets(); break;
-                    case 2: investmentController.handleCreateInvestment(); break;
-                    case 3: investmentController.handleListInvestmentsByInvestor(); break;
-                    case 4: portfolioController.handleInvestorEarningsReport(); break;
+                    case 2: investmentController.handleCreateInvestment(loggedInId); break;
+                    case 3: investmentController.handleListInvestmentsByInvestor(loggedInId); break;
+                    case 4: portfolioController.handleInvestorEarningsReport(loggedInId); break;
                     case 0: logout = true; break;
                     default: view.showMessageByKey("msg.error.invalid");
                 }
@@ -243,7 +243,8 @@ public class MenuController {
             switch (option) {
                 case 1: portfolioController.handleTop5InvestorsReport(); break;
                 case 2: portfolioController.handleGlobalEarningsReport(); break;
-                case 3: portfolioController.handleInvestorEarningsReport(); break;
+                case 3: String investorId = view.readStringInput("msg.input.investorId");
+                portfolioController.handleInvestorEarningsReport(investorId); break;
                 case 0: back = true; break;
             }
         }
