@@ -35,12 +35,11 @@ public class InvestmentController {
     /**
      * Maneja el registro de una nueva inversión.
      */
-    public void handleCreateInvestment() {
+    public void handleCreateInvestment(String investorId) {
         try {
             view.showMessageByKey("msg.title.createInvestment");
 
             String investmentId = view.readStringInput("msg.input.investmentId");
-            String investorId = view.readStringInput("msg.input.investorId");
             String assetId = view.readStringInput("msg.input.assetId");
             double amount = view.readDoubleInput("msg.input.amount");
 
@@ -113,10 +112,9 @@ public class InvestmentController {
     /**
      * Maneja la consulta del portafolio de un inversionista específico.
      */
-    public void handleListInvestmentsByInvestor() {
+    public void handleListInvestmentsByInvestor(String investorId) {
         try {
             view.showMessageByKey("msg.title.investorPortfolio");
-            String investorId = view.readStringInput("msg.input.investorId");
     
             Investor investor = investorService.findById(investorId);
     

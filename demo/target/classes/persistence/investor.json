@@ -5,7 +5,17 @@
     "email": "investor1@email.com",
     "availableCapital": 10000.0,
     "riskProfile": "CONSERVATIVE",
-    "investments": []
+    "investments": [ {
+    "id": "INV1",
+    "inversionistId": "I1",
+    "assetId": "A1",
+    "amount": 5,
+    "purchasePrice": 5000,
+    "currentValue": 6000,
+    "yieldPercentage": 20.0,
+    "date": "2024-01-10",
+    "time": "10:30"
+  }]
   },
   {
     "id": "I2",
@@ -408,5 +418,6 @@
         "time": "10:45:41.142450300"
       }
     ]
+    "investments": []
   }
 ]
