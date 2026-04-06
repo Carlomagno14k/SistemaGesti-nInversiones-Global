@@ -82,7 +82,7 @@ public double calculateTotalInvested(Investor investor) {
             return 0.0;
         }
         return investor.getInvestments().stream()
-                .mapToDouble(investment -> investment.getAmount() * investment.getPurchasePrice())
+                .mapToDouble(Investment::getPurchasePrice)
                 .sum();
     }
     public double calculateCurrentPortfolioValue(Investor investor) {

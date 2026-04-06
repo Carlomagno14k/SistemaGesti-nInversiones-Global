@@ -399,24 +399,24 @@
     "riskProfile": "MODERATE",
     "investments": []
   },
-    {
-      "id": "I013",
-      "name": "Juan David Cardenas",
-      "email": "juanda@gmail.com",
-      "availableCapital": 1606000.0,
-      "riskProfile": "MODERATE",
-      "investments": [
-        {
-          "id": "INV067",
-          "inversionistId": "I013",
-          "assetId": "A1",
-          "amount": 1.0,
-          "currentValue": 380000.0,
-          "YieldPercentage": 0.0,
-          "purchasePrice": 380000.0,
-          "date": "2026-04-05",
-          "time": "23:27:08.652945500"
-        }
-      ]
-    }
+  {
+    "id": "I013",
+    "name": "Juan David Cardenas",
+    "email": "juanda@gmail.com",
+    "availableCapital": 1983000.0,
+    "riskProfile": "MODERATE",
+    "investments": [
+      {
+        "id": "INV067",
+        "inversionistId": "I013",
+        "assetId": "A1",
+        "amount": 3.0,
+        "currentValue": 3000.0,
+        "YieldPercentage": 0.0,
+        "purchasePrice": 3000.0,
+        "date": "2026-04-05",
+        "time": "23:35:51.959213800"
+      }
+    ]
+  }
 ]

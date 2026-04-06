@@ -110,6 +110,8 @@ public class InvestmentController {
         }
     }
 
+    
+
     /**
      * Maneja la consulta del portafolio de un inversionista específico.
      */
@@ -117,22 +119,33 @@ public class InvestmentController {
         try {
             view.showMessageByKey("msg.title.investorPortfolio");
             String investorId = view.readStringInput("msg.input.investorId");
-
-            List<Investment> portfolio = investmentService.getInvestmentsByInvestorId(investorId);
-
-            if (portfolio.isEmpty()) {
+    
+            Investor investor = investorService.findById(investorId);
+    
+            if (investor == null) {
+                view.showMessageByKey("msg.error.investorNotFound");
+                return;
+            }
+    
+            List<Investment> portfolio = investor.getInvestments();
+    
+            if (portfolio == null || portfolio.isEmpty()) {
                 view.showMessageByKey("msg.error.noInvestmentsForInvestor");
             } else {
                 double totalPortfolioValue = 0.0;
-
+    
                 for (Investment inv : portfolio) {
                     printInvestmentDetails(inv);
                     totalPortfolioValue += inv.getCurrentValue();
                 }
-                
-                String totalMsg = String.format(view.getLocalizedText("msg.info.totalPortfolioValue"), totalPortfolioValue);
+    
+                String totalMsg = String.format(
+                    view.getLocalizedText("msg.info.totalPortfolioValue"),
+                    totalPortfolioValue
+                );
                 view.printText(totalMsg);
             }
+    
         } catch (OperationCancelledException e) {
             view.printText(e.getMessage());
         } catch (RuntimeException e) {
