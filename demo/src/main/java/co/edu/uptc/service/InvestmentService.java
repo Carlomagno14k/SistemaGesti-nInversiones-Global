@@ -24,7 +24,7 @@ public class InvestmentService {
     private AssetService assetService;
     public InvestmentService() {
         Type type = new TypeToken<List<Investment>>() {}.getType();
-        this.repo = new JsonRepository<>("demo\\src\\main\\resources\\investment.json\\", type);
+        this.repo = new JsonRepository<>("demo\\src\\main\\resources\\persistence\\investment.json\\", type);
     }
 
     public InvestmentService(JsonRepository<Investment> repo) {
