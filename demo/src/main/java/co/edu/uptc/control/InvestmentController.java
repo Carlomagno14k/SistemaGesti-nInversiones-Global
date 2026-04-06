@@ -62,11 +62,17 @@ public class InvestmentController {
             LocalDate date = LocalDate.now();
             LocalTime time = LocalTime.now();
 
-            investmentService.createInvestment(
+            Investment inv= investmentService.createInvestment(
                 investmentId, investorId, assetId, amount, currentValue, yieldPercentage, 
                 purchasePrice, date, time, 
                 investor.getAvailableCapital(), investor.getRiskProfile(), asset.getAssetType()
             );
+
+            investor.getInvestments().add(inv);
+            investor.setAvailableCapital(
+                investor.getAvailableCapital() - inv.getPurchasePrice()
+            );
+            investorService.updateInvestor(investor);
 
             // IMPORTANTE: Aquí deberías descontar el capital del inversionista
             // investorService.deductCapital(investorId, currentValue);

@@ -51,13 +51,15 @@ public class InvestmentService {
      * @throws InsufficientCapitalException si el capital es insuficiente
      * @throws IncompatibleRiskProfileException si el perfil de riesgo no permite el activo
      */
-    public void createInvestment(String id, String inversionistId, String assetId, double amount,double currentValue,
+    public Investment createInvestment(String id, String inversionistId, String assetId, double amount,double currentValue,
             double yieldPercentage, double purchasePrice, 
             LocalDate date, LocalTime time, double availableCapital, RiskProfile riskProfile, AssetType assetType){
         
         purchasePrice = calculatePurchasePrice(assetService.findById(assetId).getActualPrice(), amount);
         currentValue= purchasePrice;
-
+        
+        System.out.println("Capital disponible recibido: " + availableCapital);
+        System.out.println("Precio total inversión: " + purchasePrice);
         // validar capital
         if (!validateAvailableCapital(availableCapital, purchasePrice)) {
             throw new InsufficientCapitalException("Capital insuficiente para registrar la inversión.");
@@ -66,13 +68,7 @@ public class InvestmentService {
         // validar riesgo
         validateRiskProfile(riskProfile, assetType);
 
-        Investment inversion=new Investment(id, inversionistId, assetId, amount, currentValue, yieldPercentage, purchasePrice, date, time);
-
-        try {
-            repo.save(inversion);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Error trying to save the inversion.", e);
-        }
+        return new Investment(id, inversionistId, assetId, amount, currentValue, yieldPercentage, purchasePrice, date, time);
     }
 
     /**

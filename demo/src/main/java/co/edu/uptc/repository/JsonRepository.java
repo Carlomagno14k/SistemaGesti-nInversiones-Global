@@ -25,10 +25,20 @@ public class JsonRepository<T> implements Repository<T> {
 
     private Gson createGson() {
         return new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, typeOfT, context) -> LocalDate.parse(json.getAsString()))
-                .registerTypeAdapter(LocalTime.class, (JsonDeserializer<LocalTime>) (json, typeOfT, context) -> LocalTime.parse(json.getAsString()))
-                .setPrettyPrinting()
-                .create();
+        .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) 
+        (src, typeOfSrc, context) -> new JsonPrimitive(src.toString()))
+    
+        .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) 
+            (json, typeOfT, context) -> LocalDate.parse(json.getAsString()))
+        
+        .registerTypeAdapter(LocalTime.class, (JsonSerializer<LocalTime>) 
+            (src, typeOfSrc, context) -> new JsonPrimitive(src.toString()))
+        
+        .registerTypeAdapter(LocalTime.class, (JsonDeserializer<LocalTime>) 
+            (json, typeOfT, context) -> LocalTime.parse(json.getAsString()))
+        
+        .setPrettyPrinting()
+        .create();
     }
 
     @Override
@@ -38,8 +48,12 @@ public class JsonRepository<T> implements Repository<T> {
             return data != null ? data : new ArrayList<>();
         } catch (FileNotFoundException e) {
             return new ArrayList<>();
+        
         } catch (IOException e) {
             e.printStackTrace();
+            return new ArrayList<>();
+        } catch (JsonSyntaxException e) {
+            System.out.println("JSON corrupto, reiniciando archivo...");
             return new ArrayList<>();
         }
     }

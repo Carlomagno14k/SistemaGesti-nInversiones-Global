@@ -5,6 +5,7 @@ import java.util.List;
 
 import co.edu.uptc.exception.InvestorNotFoundException;
 import co.edu.uptc.exception.OperationCancelledException;
+import co.edu.uptc.model.Investment;
 import co.edu.uptc.model.Investor;
 import co.edu.uptc.model.enums.RiskProfile;
 import co.edu.uptc.service.InvestorService;
@@ -126,7 +127,7 @@ public class InvestorController {
             String newEmail = view.readStringInput("msg.input.newEmail");
             String newRiskProfile = view.readStringInput("msg.input.newRiskProfile");
 
-            investorService.updateInvestor(id, newName, newEmail, newRiskProfile);
+            investorService.updateInvestorAtributes(id, newName, newEmail, newRiskProfile);
             view.showMessageByKey("msg.success.investorUpdated");
 
         } catch (InvestorNotFoundException | IllegalArgumentException e) {

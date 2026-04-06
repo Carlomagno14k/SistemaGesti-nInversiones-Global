@@ -14,6 +14,8 @@ public enum RiskProfile {
     public int getMaxRisk(){
         return maxRisk;
     }
+
+    
     
 
 }
