@@ -137,7 +137,33 @@ public void handleCreateInvestor() {
 
             String newName = view.readStringInput("msg.input.newName");
             String newEmail = view.readStringInput("msg.input.newEmail");
-            String newRiskProfile = view.readStringInput("msg.input.newRiskProfile");
+            String newRiskProfile = view.readStringInput("msg.input.newRiskProfile").trim().toUpperCase();
+    
+    RiskProfile riskProfile;
+
+            switch (newRiskProfile) {
+        // Casos para Conservador
+        case "CONSERVADOR": 
+        case "CONSERVATIVE": 
+            riskProfile = RiskProfile.CONSERVATIVE; 
+            break;
+            
+        // Casos para Moderado
+        case "MODERADO": 
+        case "MODERATE": 
+            riskProfile = RiskProfile.MODERATE; 
+            break;
+            
+        // Casos para Agresivo
+        case "AGRESIVO": 
+        case "AGGRESSIVE": 
+            riskProfile = RiskProfile.AGGRESSIVE; 
+            break;
+            
+        default: 
+            throw new IllegalArgumentException("INVALID_RISK");
+    }
+
 
             investorService.updateInvestorAtributes(id, newName, newEmail, newRiskProfile);
             view.showMessageByKey("msg.success.investorUpdated");

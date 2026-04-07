@@ -77,22 +77,22 @@ public class AssetController {
             view.showMessageByKey("msg.error.noAssets");
         } else {
             for (Asset asset : assets) {
-                // 1. Traducimos el Enum usando la convención de nombres
+                // Traducimos el tipo de activo
                 String tipoTraducido = view.getLocalizedText("enum.AssetType." + asset.getAssetType().name());
 
-                // 2. Pasamos 'tipoTraducido' en lugar de 'asset.getAssetType()'
+                // Agregamos la volatilidad al formato (asumiendo que es un double/float)
                 String detailLine = String.format(view.getLocalizedText("msg.format.assetDetail"), 
                     asset.getId(), 
                     asset.getName(), 
                     tipoTraducido, 
-                    asset.getActualPrice());
+                    asset.getActualPrice(),
+                    asset.getVolatility()); // <--- Agregamos este parámetro
                 
                 view.printText(detailLine);
             }
         }
     } catch (RuntimeException e) {
         view.showMessageByKey("msg.error.system");
-        view.printText(e.getMessage());
     }
 }
 
