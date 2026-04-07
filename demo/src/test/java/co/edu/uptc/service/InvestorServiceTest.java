@@ -1,12 +1,17 @@
 package co.edu.uptc.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Type;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +23,7 @@ import com.google.gson.reflect.TypeToken;
 
 import co.edu.uptc.exception.InsufficientCapitalException;
 import co.edu.uptc.exception.InvestorNotFoundException;
+import co.edu.uptc.model.Investment;
 import co.edu.uptc.model.Investor;
 import co.edu.uptc.model.enums.RiskProfile;
 import co.edu.uptc.repository.JsonRepository;

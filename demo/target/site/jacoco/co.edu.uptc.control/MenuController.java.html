@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MenuController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">co.edu.uptc.control</a> &gt; <span class="el_source">MenuController.java</span></div><h1>MenuController.java</h1><pre class="source lang-java linenums">package co.edu.uptc.control;
+
+import co.edu.uptc.exception.OperationCancelledException;
+import co.edu.uptc.service.AssetService;
+import co.edu.uptc.service.InvestmentService;
+import co.edu.uptc.service.InvestorService;
+import co.edu.uptc.service.PortfolioService;
+import co.edu.uptc.view.ConsoleView;
+
+public class MenuController {
+
+    private final ConsoleView view;
+    private final AssetController assetController;
+    private final InvestorController investorController;
+    private final InvestmentController investmentController;
+    private final PortfolioController portfolioController;
+
+<span class="nc" id="L18">    public MenuController(ConsoleView view) {</span>
+<span class="nc" id="L19">        this.view = view;</span>
+
+        // Servicios únicos
+<span class="nc" id="L22">        AssetService assetService = new AssetService();</span>
+<span class="nc" id="L23">        InvestorService investorService = new InvestorService();</span>
+<span class="nc" id="L24">        InvestmentService investmentService = new InvestmentService(assetService);</span>
+<span class="nc" id="L25">        PortfolioService portfolioService = new PortfolioService(investmentService, assetService, investorService);</span>
+
+        // Controladores inyectados
+<span class="nc" id="L28">        this.assetController = new AssetController(assetService, view);</span>
+<span class="nc" id="L29">        this.investorController = new InvestorController(investorService, view);</span>
+<span class="nc" id="L30">        this.investmentController = new InvestmentController(investmentService, assetService, investorService, view);</span>
+<span class="nc" id="L31">        this.portfolioController = new PortfolioController(portfolioService, investmentService, investorService, view);</span>
+<span class="nc" id="L32">    }</span>
+    /**
+     * MENÚ DE INICIO (Selector de acceso)
+     * Usa tus llaves: menu.start.title, menu.start.option.x
+     */
+    public void runStartMenu() {
+<span class="nc" id="L38">        boolean exit = false;</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        while (!exit) {</span>
+            try {
+<span class="nc" id="L41">                view.showMessageByKey(&quot;menu.start.title&quot;);</span>
+<span class="nc" id="L42">                view.showMessageByKey(&quot;menu.start.option.1&quot;);</span>
+<span class="nc" id="L43">                view.showMessageByKey(&quot;menu.start.option.2&quot;);</span>
+<span class="nc" id="L44">                view.showMessageByKey(&quot;menu.start.option.3&quot;);</span>
+<span class="nc" id="L45">                view.showMessageByKey(&quot;menu.start.option.4&quot;);</span>
+<span class="nc" id="L46">                view.showMessageByKey(&quot;menu.start.option.0&quot;);</span>
+
+<span class="nc" id="L48">                int option = view.readIntInput(&quot;msg.input.select&quot;);</span>
+
+<span class="nc bnc" id="L50" title="All 6 branches missed.">                switch (option) {</span>
+<span class="nc" id="L51">                    case 1: investorController.handleCreateInvestor(); break;</span>
+<span class="nc" id="L52">                    case 2: runInvestorPortal(); break;</span>
+                    case 3: 
+<span class="nc bnc" id="L54" title="All 2 branches missed.">                        if (handleAdminLogin()) {</span>
+<span class="nc" id="L55">                            runAdminMenu(); </span>
+                        }
+<span class="nc" id="L57">                        break;</span>
+<span class="nc" id="L58">                    case 4: changeLanguage(); break;</span>
+                    case 0: 
+<span class="nc" id="L60">                        exit = true; </span>
+<span class="nc" id="L61">                        view.showMessageByKey(&quot;msg.goodbye&quot;); </span>
+<span class="nc" id="L62">                        break;</span>
+<span class="nc" id="L63">                    default: view.showMessageByKey(&quot;msg.error.invalid&quot;);</span>
+                }
+<span class="nc" id="L65">            } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L66">                view.printText(e.getMessage());</span>
+<span class="nc" id="L67">            } catch (Exception e) {</span>
+<span class="nc" id="L68">                view.showMessageByKey(&quot;msg.error.invalidInput&quot;);</span>
+            }
+        }
+<span class="nc" id="L71">    }</span>
+
+    /**
+     * MENÚ DEL ADMINISTRADOR
+     * Usa tus llaves: menu.title, menu.option.x
+     */
+    private void runAdminMenu() {
+<span class="nc" id="L78">        boolean back = false;</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        while (!back) {</span>
+            try {
+<span class="nc" id="L81">                view.showMessageByKey(&quot;menu.title&quot;);</span>
+<span class="nc" id="L82">                view.showMessageByKey(&quot;menu.option.1&quot;);</span>
+<span class="nc" id="L83">                view.showMessageByKey(&quot;menu.option.2&quot;);</span>
+<span class="nc" id="L84">                view.showMessageByKey(&quot;menu.option.3&quot;);</span>
+<span class="nc" id="L85">                view.showMessageByKey(&quot;menu.option.4&quot;);</span>
+<span class="nc" id="L86">                view.showMessageByKey(&quot;menu.option.5&quot;);</span>
+<span class="nc" id="L87">                view.showMessageByKey(&quot;menu.option.0&quot;);</span>
+
+<span class="nc" id="L89">                int option = view.readIntInput(&quot;msg.input.select&quot;);</span>
+
+<span class="nc bnc" id="L91" title="All 7 branches missed.">                switch (option) {</span>
+<span class="nc" id="L92">                    case 1: runInvestorMenu(); break;</span>
+<span class="nc" id="L93">                    case 2: runAssetMenu(); break;</span>
+<span class="nc" id="L94">                    case 3: runInvestmentMenu(); break;</span>
+<span class="nc" id="L95">                    case 4: runPortfolioMenu(); break;</span>
+<span class="nc" id="L96">                    case 5: changeLanguage(); break;</span>
+<span class="nc" id="L97">                    case 0: back = true; break;</span>
+<span class="nc" id="L98">                    default: view.showMessageByKey(&quot;msg.error.invalid&quot;);</span>
+                }
+<span class="nc" id="L100">            } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L101">                view.printText(e.getMessage());</span>
+<span class="nc" id="L102">            } catch (Exception e) {</span>
+<span class="nc" id="L103">                view.showMessageByKey(&quot;msg.error.invalidInput&quot;);</span>
+            }
+        }
+<span class="nc" id="L106">    }</span>
+
+    /**
+     * MENÚ DEL INVERSIONISTA (Portal de Usuario)
+     * Usa tus llaves: menu.investor.title, menu.investor.option.x
+     */
+    private void runInvestorPortal() {
+        try {
+            // Llamamos a TU método de login
+<span class="nc" id="L115">            String loggedInId = investorController.handleLogin();</span>
+            
+            // Si tu método retornó null (porque falló o canceló), cerramos la puerta
+<span class="nc bnc" id="L118" title="All 2 branches missed.">            if (loggedInId == null) {</span>
+<span class="nc" id="L119">                return; </span>
+            }
+
+            // Si pasó, mostramos el menú...
+<span class="nc" id="L123">            boolean logout = false;</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">            while (!logout) {</span>
+<span class="nc" id="L125">                view.showMessageByKey(&quot;menu.investor.title&quot;);</span>
+<span class="nc" id="L126">                view.showMessageByKey(&quot;menu.investor.option.1&quot;);</span>
+<span class="nc" id="L127">                view.showMessageByKey(&quot;menu.investor.option.2&quot;);</span>
+<span class="nc" id="L128">                view.showMessageByKey(&quot;menu.investor.option.3&quot;);</span>
+<span class="nc" id="L129">                view.showMessageByKey(&quot;menu.investor.option.4&quot;);</span>
+<span class="nc" id="L130">                view.showMessageByKey(&quot;menu.investor.option.0&quot;);</span>
+
+<span class="nc" id="L132">                int option = view.readIntInput(&quot;msg.input.select&quot;);</span>
+
+<span class="nc bnc" id="L134" title="All 6 branches missed.">                switch (option) {</span>
+<span class="nc" id="L135">                    case 1: assetController.handleListAssets(); break;</span>
+<span class="nc" id="L136">                    case 2: investmentController.handleCreateInvestment(loggedInId); break;</span>
+<span class="nc" id="L137">                    case 3: investmentController.handleListInvestmentsByInvestor(loggedInId); break;</span>
+<span class="nc" id="L138">                    case 4: portfolioController.handleInvestorEarningsReport(loggedInId); break;</span>
+<span class="nc" id="L139">                    case 0: logout = true; break;</span>
+<span class="nc" id="L140">                    default: view.showMessageByKey(&quot;msg.error.invalid&quot;);</span>
+                }
+            }
+<span class="nc" id="L143">        } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L144">            view.printText(e.getMessage());</span>
+<span class="nc" id="L145">        } catch (Exception e) {</span>
+<span class="nc" id="L146">            view.showMessageByKey(&quot;msg.error.invalidInput&quot;);</span>
+        }
+<span class="nc" id="L148">    }</span>
+
+    /**
+     * Lógica para cambio de idioma
+     */
+    private void changeLanguage() {
+<span class="nc" id="L154">        view.showMessageByKey(&quot;menu.lang.options&quot;);</span>
+<span class="nc" id="L155">        int lang = view.readIntInput(&quot;menu.lang.select&quot;);</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        if (lang == 1) {</span>
+<span class="nc" id="L157">            view.loadLanguage(&quot;es&quot;);</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        } else if (lang == 2) {</span>
+<span class="nc" id="L159">            view.loadLanguage(&quot;en&quot;);</span>
+        }
+<span class="nc" id="L161">        view.showMessageByKey(&quot;msg.success.langChanged&quot;);</span>
+<span class="nc" id="L162">    }</span>
+
+    // --- Submenús de gestión (Se mantienen conectados a los controladores) ---
+
+    private void runAssetMenu() {
+<span class="nc" id="L167">        boolean back = false;</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        while (!back) {</span>
+<span class="nc" id="L169">            view.showMessageByKey(&quot;menu.admin.assets.title&quot;);</span>
+<span class="nc" id="L170">            view.showMessageByKey(&quot;menu.admin.assets.options&quot;);</span>
+<span class="nc" id="L171">            int option = view.readIntInput(&quot;msg.input.select&quot;);</span>
+<span class="nc bnc" id="L172" title="All 6 branches missed.">            switch (option) {</span>
+<span class="nc" id="L173">                case 1: assetController.handleCreateAsset(); break;</span>
+<span class="nc" id="L174">                case 2: assetController.handleListAssets(); break;</span>
+<span class="nc" id="L175">                case 3: assetController.handleUpdateAssetPrice(); break;</span>
+<span class="nc" id="L176">                case 4: assetController.handleFindByPriceRange(); break;</span>
+<span class="nc" id="L177">                case 0: back = true; break;</span>
+<span class="nc" id="L178">                default: view.showMessageByKey(&quot;msg.error.invalid&quot;);</span>
+            }
+        }
+<span class="nc" id="L181">    }</span>
+
+    private void runInvestorMenu() {
+<span class="nc" id="L184">        boolean back = false;</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        while (!back) {</span>
+<span class="nc" id="L186">            view.showMessageByKey(&quot;menu.admin.investors.title&quot;);</span>
+<span class="nc" id="L187">            view.showMessageByKey(&quot;menu.admin.investors.options&quot;);</span>
+<span class="nc" id="L188">            int option = view.readIntInput(&quot;msg.input.selectOption&quot;);</span>
+<span class="nc bnc" id="L189" title="All 6 branches missed.">            switch (option) {</span>
+<span class="nc" id="L190">                case 1: investorController.handleListInvestors(); break;</span>
+<span class="nc" id="L191">                case 2: investorController.handleFindInvestorById(); break;</span>
+<span class="nc" id="L192">                case 3: investorController.handleUpdateInvestor(); break;</span>
+<span class="nc" id="L193">                case 4: investorController.handleDeleteInvestor(); break;</span>
+<span class="nc" id="L194">                case 0: back = true; break;</span>
+<span class="nc" id="L195">                default: view.showMessageByKey(&quot;msg.error.invalid&quot;);</span>
+            }
+        }
+<span class="nc" id="L198">    }</span>
+
+    private void runInvestmentMenu() {
+<span class="nc" id="L201">        boolean back = false;</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        while (!back) {</span>
+<span class="nc" id="L203">            view.showMessageByKey(&quot;msg.menu.investment.title&quot;);</span>
+<span class="nc" id="L204">            view.printText(&quot;1. Listar | 2. Recalcular Mercado | 0. Volver&quot;);</span>
+<span class="nc" id="L205">            int option = view.readIntInput(&quot;msg.input.select&quot;);</span>
+<span class="nc bnc" id="L206" title="All 4 branches missed.">            switch (option) {</span>
+<span class="nc" id="L207">                case 1: investmentController.handleListAllInvestments(); break;</span>
+<span class="nc" id="L208">                case 2: investmentController.handleUpdateAssetPriceAndRecalculate(); break;</span>
+<span class="nc" id="L209">                case 0: back = true; break;</span>
+            }
+        }
+<span class="nc" id="L212">    }</span>
+    /**
+     * Valida el acceso al menú del administrador.
+     */
+    private boolean handleAdminLogin() {
+        try {
+            // Lee la contraseña usando tu llave del properties
+<span class="nc" id="L219">            String password = view.readStringInput(&quot;msg.input.adminPassword&quot;);</span>
+            
+            // Aquí defines tu contraseña de administrador
+<span class="nc bnc" id="L222" title="All 2 branches missed.">            if (password.equals(&quot;admin123&quot;)) {</span>
+<span class="nc" id="L223">                view.showMessageByKey(&quot;msg.success.adminLogin&quot;);</span>
+<span class="nc" id="L224">                return true;</span>
+            } else {
+<span class="nc" id="L226">                view.showMessageByKey(&quot;msg.error.invalidPassword&quot;);</span>
+<span class="nc" id="L227">                return false;</span>
+            }
+<span class="nc" id="L229">        } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L230">            view.printText(e.getMessage());</span>
+<span class="nc" id="L231">            return false;</span>
+        }
+    }
+
+    private void runPortfolioMenu() {
+<span class="nc" id="L236">        boolean back = false;</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        while (!back) {</span>
+<span class="nc" id="L238">            view.showMessageByKey(&quot;msg.menu.portfolio.title&quot;);</span>
+<span class="nc" id="L239">            view.showMessageByKey(&quot;msg.menu.portfolio.opt1&quot;);</span>
+<span class="nc" id="L240">            view.showMessageByKey(&quot;msg.menu.portfolio.opt2&quot;);</span>
+<span class="nc" id="L241">            view.showMessageByKey(&quot;msg.menu.portfolio.opt3&quot;);</span>
+<span class="nc" id="L242">            view.printText(&quot;0. Volver&quot;);</span>
+<span class="nc" id="L243">            int option = view.readIntInput(&quot;msg.input.select&quot;);</span>
+<span class="nc bnc" id="L244" title="All 5 branches missed.">            switch (option) {</span>
+<span class="nc" id="L245">                case 1: portfolioController.handleTop5InvestorsReport(); break;</span>
+<span class="nc" id="L246">                case 2: portfolioController.handleGlobalEarningsReport(); break;</span>
+<span class="nc" id="L247">                case 3: String investorId = view.readStringInput(&quot;msg.input.investorId&quot;);</span>
+<span class="nc" id="L248">                portfolioController.handleInvestorEarningsReport(investorId); break;</span>
+<span class="nc" id="L249">                case 0: back = true; break;</span>
+            }
+        }
+<span class="nc" id="L252">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

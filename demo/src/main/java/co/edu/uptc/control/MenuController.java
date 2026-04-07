@@ -127,7 +127,7 @@ public class MenuController {
                 view.showMessageByKey("menu.investor.option.2");
                 view.showMessageByKey("menu.investor.option.3");
                 view.showMessageByKey("menu.investor.option.4");
-                view.showMessageByKey("menu.investor.option.0/n");
+                view.showMessageByKey("menu.investor.option.0");
 
                 int option = view.readIntInput("msg.input.select");
 

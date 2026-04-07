@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConsoleView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">co.edu.uptc.view</a> &gt; <span class="el_source">ConsoleView.java</span></div><h1>ConsoleView.java</h1><pre class="source lang-java linenums">package co.edu.uptc.view;
+
+import java.util.InputMismatchException;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Scanner;
+
+import co.edu.uptc.exception.OperationCancelledException;
+
+public class ConsoleView {
+
+    public String readDateInput(String messageKey) {
+<span class="nc" id="L14">        return readStringInput(messageKey); </span>
+    }
+    
+    private final Scanner scanner;
+    private ResourceBundle messages;
+
+<span class="nc" id="L20">    public ConsoleView() {</span>
+<span class="nc" id="L21">        this.scanner = new Scanner(System.in);</span>
+<span class="nc" id="L22">        loadLanguage(&quot;es&quot;); // Español por defecto al iniciar</span>
+<span class="nc" id="L23">    }</span>
+
+    /**
+     * Carga el archivo de propiedades según el idioma solicitado.
+     * @param lang &quot;es&quot; para español, &quot;en&quot; para inglés.
+     */
+    /**
+     * Carga el archivo de propiedades según el idioma solicitado.
+     * @param lang &quot;es&quot; para español, &quot;en&quot; para inglés.
+     */
+    public void loadLanguage(String lang) {
+<span class="nc" id="L34">        Locale locale = Locale.of(lang); </span>
+        
+        // Le indicamos que el archivo base &quot;messages&quot; está dentro de la carpeta/paquete &quot;i18n&quot;
+<span class="nc" id="L37">        this.messages = ResourceBundle.getBundle(&quot;i18n.messages&quot;, locale);</span>
+<span class="nc" id="L38">    }</span>
+
+    /**
+     * TRUCO SALVAVIDAS: Intenta buscar la llave en el .properties. 
+     * Si no existe (porque le pasamos un texto normal concatenado), devuelve el texto tal cual.
+     */
+    public String getLocalizedText(String textOrKey) {
+        try {
+<span class="nc" id="L46">            return messages.getString(textOrKey);</span>
+<span class="nc" id="L47">        } catch (MissingResourceException e) {</span>
+<span class="nc" id="L48">            return textOrKey; // Si no es una llave, asume que es texto plano y lo devuelve</span>
+        }
+    }
+
+    // ---------------- MÉTODOS DE SALIDA (OUTPUT) ----------------
+
+    public void showMessageByKey(String key) {
+<span class="nc" id="L55">        System.out.println(getLocalizedText(key));</span>
+<span class="nc" id="L56">    }</span>
+
+    public void printText(String text) {
+<span class="nc" id="L59">        System.out.println(getLocalizedText(text));</span>
+<span class="nc" id="L60">    }</span>
+
+    public void showTotalProfits(double total) {
+<span class="nc" id="L63">        System.out.println(getLocalizedText(&quot;msg.report.total&quot;) + total);</span>
+<span class="nc" id="L64">    }</span>
+
+    public void showTopInvestors(java.util.List&lt;java.util.Map.Entry&lt;String, Double&gt;&gt; list) {
+<span class="nc" id="L67">        System.out.println(getLocalizedText(&quot;msg.report.top&quot;));</span>
+<span class="nc" id="L68">        int i = 1;</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        for (var entry : list) {</span>
+<span class="nc" id="L70">            System.out.println(i + &quot;. &quot; + entry.getKey() + &quot; -&gt; &quot; + entry.getValue());</span>
+<span class="nc" id="L71">            i++;</span>
+        }
+<span class="nc" id="L73">    }</span>
+
+    public void showExportSuccess(String fileName) {
+<span class="nc" id="L76">        System.out.println(getLocalizedText(&quot;msg.report.exported&quot;) + fileName);</span>
+<span class="nc" id="L77">    }</span>
+
+
+    // ---------------- MÉTODOS DE ENTRADA (INPUT) ----------------
+
+   public String readStringInput(String messageKey) {
+        // Obtenemos el texto principal de la pregunta (ej: &quot;Ingrese ID:&quot;)
+<span class="nc" id="L84">        String prompt = getLocalizedText(messageKey);</span>
+        
+        // Obtenemos el texto de la pista para cancelar según el idioma actual
+<span class="nc" id="L87">        String cancelHint = getLocalizedText(&quot;msg.info.cancelHint&quot;);</span>
+        
+        // Imprimimos la combinación de ambos
+<span class="nc" id="L90">        System.out.print(prompt + cancelHint); </span>
+        
+<span class="nc" id="L92">        String input = scanner.nextLine().trim();</span>
+        
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (input.equalsIgnoreCase(&quot;x&quot;)) {</span>
+<span class="nc" id="L95">            throw new OperationCancelledException(getLocalizedText(&quot;msg.info.processCancelled&quot;));</span>
+        }
+        
+<span class="nc" id="L98">        return input;</span>
+    }
+    public double readDoubleInput(String messageKey) {
+<span class="nc" id="L101">        while (true) {</span>
+            try {
+<span class="nc" id="L103">                String input = readStringInput(messageKey); // Reutilizamos readStringInput que ya tiene la lógica de la &quot;X&quot;</span>
+<span class="nc" id="L104">                return Double.parseDouble(input);</span>
+<span class="nc" id="L105">            } catch (NumberFormatException e) {</span>
+<span class="nc" id="L106">                System.out.println(getLocalizedText(&quot;msg.error.invalidNumber&quot;));</span>
+            }
+        }
+    }
+
+    public int readIntInput(String promptKey) {
+<span class="nc" id="L112">        while (true) {</span>
+            try {
+<span class="nc" id="L114">                System.out.print(getLocalizedText(promptKey) + &quot; &quot;);</span>
+<span class="nc" id="L115">                int input = scanner.nextInt();</span>
+<span class="nc" id="L116">                scanner.nextLine(); // Limpiar el &quot;Enter&quot; que queda en el buffer</span>
+<span class="nc" id="L117">                return input;</span>
+<span class="nc" id="L118">            } catch (InputMismatchException e) {</span>
+<span class="nc" id="L119">                System.out.println(getLocalizedText(&quot;msg.error.invalid&quot;));</span>
+<span class="nc" id="L120">                scanner.nextLine(); // Limpiar la basura del buffer</span>
+            }
+        }
+    }
+
+    // ---------------- MENÚS DEL SISTEMA ----------------
+
+    public void showStartMenu() {
+<span class="nc" id="L128">        System.out.println(&quot;\n&quot; + getLocalizedText(&quot;menu.start.title&quot;));</span>
+<span class="nc" id="L129">        System.out.println(getLocalizedText(&quot;menu.start.option.1&quot;));</span>
+<span class="nc" id="L130">        System.out.println(getLocalizedText(&quot;menu.start.option.2&quot;));</span>
+<span class="nc" id="L131">        System.out.println(getLocalizedText(&quot;menu.start.option.3&quot;));</span>
+<span class="nc" id="L132">        System.out.println(getLocalizedText(&quot;menu.start.option.4&quot;));</span>
+<span class="nc" id="L133">        System.out.println(getLocalizedText(&quot;menu.start.option.0&quot;));</span>
+<span class="nc" id="L134">    }</span>
+
+    public void showAdminMenu() {
+<span class="nc" id="L137">        System.out.println(&quot;\n&quot; + getLocalizedText(&quot;menu.title&quot;));</span>
+<span class="nc" id="L138">        System.out.println(getLocalizedText(&quot;menu.option.1&quot;));</span>
+<span class="nc" id="L139">        System.out.println(getLocalizedText(&quot;menu.option.2&quot;));</span>
+<span class="nc" id="L140">        System.out.println(getLocalizedText(&quot;menu.option.3&quot;));</span>
+<span class="nc" id="L141">        System.out.println(getLocalizedText(&quot;menu.option.4&quot;));</span>
+<span class="nc" id="L142">        System.out.println(getLocalizedText(&quot;menu.option.0&quot;));</span>
+<span class="nc" id="L143">    }</span>
+
+    public void showInvestorDashboard() {
+<span class="nc" id="L146">        System.out.println(&quot;\n&quot; + getLocalizedText(&quot;menu.investor.title&quot;));</span>
+<span class="nc" id="L147">        System.out.println(getLocalizedText(&quot;menu.investor.option.1&quot;));</span>
+<span class="nc" id="L148">        System.out.println(getLocalizedText(&quot;menu.investor.option.2&quot;));</span>
+<span class="nc" id="L149">        System.out.println(getLocalizedText(&quot;menu.investor.option.3&quot;));</span>
+<span class="nc" id="L150">        System.out.println(getLocalizedText(&quot;menu.investor.option.4&quot;));</span>
+<span class="nc" id="L151">        System.out.println(getLocalizedText(&quot;menu.investor.option.0&quot;));</span>
+<span class="nc" id="L152">    }</span>
+
+    public void showReportsMenu() {
+<span class="nc" id="L155">        System.out.println(&quot;\n&quot; + getLocalizedText(&quot;menu.reports.title&quot;));</span>
+<span class="nc" id="L156">        System.out.println(getLocalizedText(&quot;menu.reports.option.1&quot;)); // Ganancias</span>
+<span class="nc" id="L157">        System.out.println(getLocalizedText(&quot;menu.reports.option.2&quot;)); // Top 5</span>
+<span class="nc" id="L158">        System.out.println(getLocalizedText(&quot;menu.reports.option.3&quot;)); // Export CSV</span>
+<span class="nc" id="L159">        System.out.println(getLocalizedText(&quot;menu.reports.option.4&quot;)); // Export JSON</span>
+<span class="nc" id="L160">        System.out.println(getLocalizedText(&quot;menu.option.0&quot;));</span>
+<span class="nc" id="L161">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PortfolioService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">co.edu.uptc.service</a> &gt; <span class="el_source">PortfolioService.java</span></div><h1>PortfolioService.java</h1><pre class="source lang-java linenums">package co.edu.uptc.service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import co.edu.uptc.model.Asset;
+import co.edu.uptc.model.Investment;
+import co.edu.uptc.model.Investor;
+
+/**
+ * Servicio de agregación de portafolio: cálculos sobre conjuntos de inversiones,
+ * como el total de ganancias o pérdidas en un intervalo de fechas (reporte por periodo).
+ */
+public class PortfolioService {
+    private final InvestorService investorService;
+    private final InvestmentService inversionService;
+    private final AssetService assetService;
+
+    /**
+     * Construye el servicio de portafolio con las dependencias necesarias para valorar
+     * cada inversión con el precio actual del activo.
+     *
+     * @param inversionService servicio que aporta fórmulas de valor, inversión inicial y ganancia
+     * @param assetService servicio que resuelve el precio actual por activo
+     */
+<span class="fc" id="L26">    public PortfolioService(InvestmentService inversionService, AssetService assetService, InvestorService investorService) {</span>
+<span class="fc" id="L27">        this.inversionService = inversionService;</span>
+<span class="fc" id="L28">        this.assetService = assetService;</span>
+<span class="fc" id="L29">        this.investorService = investorService; </span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Calcula la suma de las ganancias o pérdidas monetarias de las inversiones cuya fecha
+     * cae dentro del periodo indicado (inclusive en los extremos). Para cada operación se usa
+     * el precio actual del activo frente al valor de compra, cumpliendo el reporte de
+     * ganancias totales en un rango de tiempo.
+     *
+     * @param inversions lista de inversiones a considerar (habitualmente todas o las filtradas)
+     * @param startDate fecha inicial del periodo (inclusive)
+     * @param endDate fecha final del periodo (inclusive)
+     * @return suma de (valor actual − inversión inicial) de las inversiones en el periodo
+     * @throws IllegalArgumentException si la fecha de inicio es posterior a la fecha final
+     */
+    public double calculateEarningsByPeriod(List&lt;Investment&gt; inversions, LocalDate startDate, LocalDate endDate) {
+<span class="fc" id="L45">        double total = 0;</span>
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (startDate.isAfter(endDate)) {</span>
+<span class="fc" id="L48">            throw new IllegalArgumentException(&quot;Start date cannot be after end date.&quot;);</span>
+        }
+
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (Investment inv : inversions) {</span>
+<span class="pc bpc" id="L53" title="1 of 4 branches missed.">            if ((inv.getDate().isEqual(startDate) || inv.getDate().isAfter(startDate))</span>
+<span class="pc bpc" id="L54" title="2 of 4 branches missed.">                    &amp;&amp; (inv.getDate().isEqual(endDate) || inv.getDate().isBefore(endDate))) {</span>
+
+
+<span class="fc" id="L57">                double actualValue = inversionService.calculateCurrentValue(inv);</span>
+<span class="fc" id="L58">                double purchaseValue = inversionService.calculatePurchasePrice(inv.getPurchasePrice(), inv.getAmount());</span>
+
+<span class="fc" id="L60">                total += inversionService.calculateEarnings(actualValue, purchaseValue);</span>
+            }
+        }
+
+<span class="fc" id="L64">        return total;</span>
+
+    }
+    public List&lt;Investor&gt; getTop5InvestorsByYield() {
+<span class="fc" id="L68">    List&lt;Investor&gt; allInvestors = investorService.listInversionists();</span>
+
+<span class="fc" id="L70">    return allInvestors.stream()</span>
+<span class="pc bpc" id="L71" title="2 of 4 branches missed.">            .filter(inv -&gt; inv.getInvestments() != null &amp;&amp; !inv.getInvestments().isEmpty())</span>
+<span class="fc" id="L72">            .sorted((inv1, inv2) -&gt; {</span>
+<span class="fc" id="L73">                double yield1 = calculateYieldPercentage(inv1);</span>
+<span class="fc" id="L74">                double yield2 = calculateYieldPercentage(inv2);</span>
+<span class="fc" id="L75">                return Double.compare(yield2, yield1); // Orden descendente</span>
+            })
+<span class="fc" id="L77">            .limit(5)</span>
+<span class="fc" id="L78">            .toList();</span>
+}
+public double calculateTotalInvested(Investor investor) {
+<span class="pc bpc" id="L81" title="1 of 4 branches missed.">        if (investor.getInvestments() == null || investor.getInvestments().isEmpty()) {</span>
+<span class="fc" id="L82">            return 0.0;</span>
+        }
+<span class="fc" id="L84">        return investor.getInvestments().stream()</span>
+<span class="fc" id="L85">                .mapToDouble(Investment::getPurchasePrice)</span>
+<span class="fc" id="L86">                .sum();</span>
+    }
+    public double calculateCurrentPortfolioValue(Investor investor) {
+<span class="pc bpc" id="L89" title="2 of 4 branches missed.">        if (investor.getInvestments() == null || investor.getInvestments().isEmpty()) {</span>
+<span class="nc" id="L90">            return 0.0;</span>
+        }
+        
+<span class="fc" id="L93">        return investor.getInvestments().stream()</span>
+<span class="fc" id="L94">                .mapToDouble(investment -&gt; {</span>
+<span class="fc" id="L95">                    Asset asset = assetService.findById(investment.getAssetId());</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">                    if (asset != null) {</span>
+<span class="fc" id="L97">                        return investment.getAmount() * asset.getActualPrice();</span>
+                    }
+<span class="nc" id="L99">                    return 0.0; </span>
+                })
+<span class="fc" id="L101">                .sum();</span>
+    }
+
+public double calculateYieldPercentage(Investor investor) {
+<span class="fc" id="L105">    double totalInvested = calculateTotalInvested(investor); </span>
+<span class="fc" id="L106">    double currentValue = calculateCurrentPortfolioValue(investor);</span>
+
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">    if (totalInvested == 0) return 0.0;</span>
+    
+    // Formula: ((Valor Actual - Inversion Inicial) / Inversion Inicial) * 100
+<span class="fc" id="L111">    return ((currentValue - totalInvested) / totalInvested) * 100.0;</span>
+}
+public double calculatePortfolioRisk(Investor investor) {
+<span class="fc" id="L114">        double totalValue = calculateCurrentPortfolioValue(investor);</span>
+        
+        // Evitamos división por cero si el portafolio está vacío
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        if (totalValue == 0) return 0.0;</span>
+
+<span class="fc" id="L119">        double weightedRiskSum = 0.0;</span>
+        
+<span class="fc" id="L121">        List&lt;Investment&gt; investments = investor.getInvestments();</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        if (investments != null) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">            for (Investment inv : investments) {</span>
+<span class="fc" id="L124">                Asset asset = assetService.findById(inv.getAssetId());</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">                if (asset != null) {</span>
+<span class="fc" id="L126">                    double currentInvValue = inv.getAmount() * asset.getActualPrice();</span>
+                    // Multiplicamos el valor que tiene invertido por la volatilidad (riesgo) de ese activo
+<span class="fc" id="L128">                    weightedRiskSum += (currentInvValue * asset.getVolatility());</span>
+                }
+            }
+        }
+        // Dividimos entre el total para sacar el promedio ponderado
+<span class="fc" id="L133">        return weightedRiskSum / totalValue;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

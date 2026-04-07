@@ -51,6 +51,8 @@ class InvestmentServiceTest {
         Investment inv = service.createInvestment("op-1", "inv-1", "a-1", 10, 5.0, d, t, 500.0, RiskProfile.MODERATE, AssetType.BOND);
         assertEquals("op-1", inv.getId());
         assertEquals(100.0, inv.getPurchasePrice(), 0.0001);
+        assertEquals(1, service.listInvestments().size());
+        assertEquals("op-1", service.listInvestments().get(0).getId());
     }
 
     @Test
@@ -123,5 +125,16 @@ class InvestmentServiceTest {
     void validateRiskProfile_throwsWhenIncompatible() {
         assertThrows(IncompatibleRiskProfileException.class,
                 () -> service.validateRiskProfile(RiskProfile.CONSERVATIVE, AssetType.CRYPTO));
+    }
+
+    @Test
+    void getInvestmentsByInvestorId_returnsOnlyMatchingInvestor() {
+        LocalDate d = LocalDate.of(2026, 3, 1);
+        LocalTime t = LocalTime.NOON;
+        service.createInvestment("op-a", "inv-a", "a-1", 1, 0.0, d, t, 500.0, RiskProfile.MODERATE, AssetType.BOND);
+        service.createInvestment("op-b", "inv-b", "a-1", 1, 0.0, d, t, 500.0, RiskProfile.MODERATE, AssetType.BOND);
+
+        assertEquals(1, service.getInvestmentsByInvestorId("inv-a").size());
+        assertEquals("op-a", service.getInvestmentsByInvestorId("inv-a").get(0).getId());
     }
 }

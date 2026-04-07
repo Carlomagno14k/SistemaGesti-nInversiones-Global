@@ -66,7 +66,13 @@ public class InvestmentService {
         // validar riesgo
         validateRiskProfile(riskProfile, assetType);
 
-        return new Investment(id, inversionistId, assetId, amount, purchasePrice, date, time);
+        Investment investment = new Investment(id, inversionistId, assetId, amount, purchasePrice, date, time);
+        try {
+            repo.save(investment);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al guardar la inversión en persistencia.", e);
+        }
+        return investment;
     }
 
     /**

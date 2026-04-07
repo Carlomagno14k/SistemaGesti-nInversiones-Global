@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssetController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">co.edu.uptc.control</a> &gt; <span class="el_source">AssetController.java</span></div><h1>AssetController.java</h1><pre class="source lang-java linenums">package co.edu.uptc.control;
+
+import co.edu.uptc.model.Asset;
+import co.edu.uptc.model.enums.AssetType;
+import co.edu.uptc.service.AssetService;
+import co.edu.uptc.view.ConsoleView;
+import co.edu.uptc.exception.AssetNotFoundException;
+import co.edu.uptc.exception.OperationCancelledException;
+
+import java.util.List;
+
+public class AssetController {
+    
+    private final AssetService assetService;
+    private final ConsoleView view;
+
+<span class="nc" id="L17">    public AssetController(AssetService assetService, ConsoleView view) {</span>
+<span class="nc" id="L18">        this.assetService = assetService;</span>
+<span class="nc" id="L19">        this.view = view;</span>
+<span class="nc" id="L20">    }</span>
+
+    /**
+     * Maneja la creación de un nuevo activo.
+     */
+    public void handleCreateAsset() {
+        try {
+<span class="nc" id="L27">            view.showMessageByKey(&quot;msg.title.createAsset&quot;);</span>
+            
+<span class="nc" id="L29">            String id = view.readStringInput(&quot;msg.input.assetId&quot;);</span>
+<span class="nc" id="L30">            String name = view.readStringInput(&quot;msg.input.assetName&quot;);</span>
+<span class="nc" id="L31">            String typeStr = view.readStringInput(&quot;msg.input.assetType&quot;);</span>
+             AssetType assetType;
+<span class="nc bnc" id="L33" title="All 8 branches missed.">                        switch (typeStr.toUpperCase()) {</span>
+                            case &quot;BONO&quot;: case &quot;BOND&quot;: 
+<span class="nc" id="L35">                                assetType = AssetType.BOND; break;</span>
+                            case &quot;ACCION&quot;: case &quot;ACCIÓN&quot;: case &quot;STOCK&quot;: 
+<span class="nc" id="L37">                                assetType = AssetType.STOCK; break;</span>
+                            case &quot;ETF&quot;: 
+<span class="nc" id="L39">                                assetType = AssetType.ETF; break;</span>
+                            case &quot;PROPIEDAD&quot;: case &quot;INMUEBLE&quot;: case &quot;PROPERTY&quot;: 
+<span class="nc" id="L41">                                assetType = AssetType.PROPERTY; break;</span>
+                            case &quot;DIVISA&quot;: case &quot;BADGE&quot;: 
+<span class="nc" id="L43">                                assetType = AssetType.BADGE; break;</span>
+                            case &quot;CRIPTOMONEDA&quot;: case &quot;CRIPTO&quot;: case &quot;CRYPTO&quot;: 
+<span class="nc" id="L45">                                assetType = AssetType.CRYPTO; break;</span>
+                            case &quot;NFT&quot;: 
+<span class="nc" id="L47">                                assetType = AssetType.NFT; break;</span>
+                            default: 
+<span class="nc" id="L49">                                throw new IllegalArgumentException(&quot;Tipo de activo inválido / Invalid asset type&quot;);</span>
+                        }
+            
+<span class="nc" id="L52">            double price = view.readDoubleInput(&quot;msg.input.assetPrice&quot;);</span>
+<span class="nc" id="L53">            double volatility = view.readDoubleInput(&quot;msg.input.assetVolatility&quot;);</span>
+
+<span class="nc" id="L55">            assetService.createAsset(id, name, assetType, price, volatility);</span>
+<span class="nc" id="L56">            view.showMessageByKey(&quot;msg.success.assetCreated&quot;);</span>
+
+<span class="nc" id="L58">        } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L59">            view.printText(e.getMessage());</span>
+<span class="nc" id="L60">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L61">            view.showMessageByKey(&quot;msg.error.invalidAssetType&quot;);</span>
+<span class="nc" id="L62">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L63">            view.showMessageByKey(&quot;msg.error.system&quot;);</span>
+<span class="nc" id="L64">            view.printText(e.getMessage());</span>
+        }
+<span class="nc" id="L66">    }</span>
+
+    /**
+     * Maneja el listado de todos los activos.
+     */
+    public void handleListAssets() {
+    try {
+<span class="nc" id="L73">        view.showMessageByKey(&quot;msg.title.listAssets&quot;);</span>
+<span class="nc" id="L74">        List&lt;Asset&gt; assets = assetService.listAssets();</span>
+
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (assets.isEmpty()) {</span>
+<span class="nc" id="L77">            view.showMessageByKey(&quot;msg.error.noAssets&quot;);</span>
+<span class="nc" id="L78">        } else {</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            for (Asset asset : assets) {</span>
+                // 1. Traducimos el Enum usando la convención de nombres
+<span class="nc" id="L81">                String tipoTraducido = view.getLocalizedText(&quot;enum.AssetType.&quot; + asset.getAssetType().name());</span>
+
+                // 2. Pasamos 'tipoTraducido' en lugar de 'asset.getAssetType()'
+<span class="nc" id="L84">                String detailLine = String.format(view.getLocalizedText(&quot;msg.format.assetDetail&quot;), </span>
+<span class="nc" id="L85">                    asset.getId(), </span>
+<span class="nc" id="L86">                    asset.getName(), </span>
+<span class="nc" id="L87">                    tipoTraducido, </span>
+<span class="nc" id="L88">                    asset.getActualPrice());</span>
+                
+<span class="nc" id="L90">                view.printText(detailLine);</span>
+            }
+        }
+<span class="nc" id="L93">    } catch (RuntimeException e) {</span>
+<span class="nc" id="L94">        view.showMessageByKey(&quot;msg.error.system&quot;);</span>
+<span class="nc" id="L95">        view.printText(e.getMessage());</span>
+    }
+<span class="nc" id="L97">}</span>
+
+    /**
+     * Maneja la actualización del precio de un activo.
+     */
+    public void handleUpdateAssetPrice() {
+        try {
+<span class="nc" id="L104">            view.showMessageByKey(&quot;msg.title.updatePrice&quot;);</span>
+            
+<span class="nc" id="L106">            String id = view.readStringInput(&quot;msg.input.assetId&quot;);</span>
+<span class="nc" id="L107">            double newPrice = view.readDoubleInput(&quot;msg.input.newPrice&quot;);</span>
+
+<span class="nc" id="L109">            assetService.updAssetPrice(id, newPrice);</span>
+<span class="nc" id="L110">            view.showMessageByKey(&quot;msg.success.priceUpdated&quot;);</span>
+
+<span class="nc" id="L112">        } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L113">            view.printText(e.getMessage());</span>
+<span class="nc" id="L114">        } catch (AssetNotFoundException e) {</span>
+<span class="nc" id="L115">            view.printText(e.getMessage());</span>
+<span class="nc" id="L116">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L117">            view.showMessageByKey(&quot;msg.error.system&quot;);</span>
+<span class="nc" id="L118">            view.printText(e.getMessage());</span>
+        }
+<span class="nc" id="L120">    }</span>
+
+    /**
+     * Maneja la búsqueda por rango de precio.
+     */
+    public void handleFindByPriceRange() {
+        try {
+<span class="nc" id="L127">            view.showMessageByKey(&quot;msg.title.priceRange&quot;);</span>
+            
+<span class="nc" id="L129">            double minPrice = view.readDoubleInput(&quot;msg.input.minPrice&quot;);</span>
+<span class="nc" id="L130">            double maxPrice = view.readDoubleInput(&quot;msg.input.maxPrice&quot;);</span>
+
+<span class="nc" id="L132">            List&lt;Asset&gt; assets = assetService.findByPriceRange(minPrice, maxPrice);</span>
+
+<span class="nc bnc" id="L134" title="All 2 branches missed.">            if (assets.isEmpty()) {</span>
+<span class="nc" id="L135">                view.showMessageByKey(&quot;msg.error.noAssetsInRange&quot;);</span>
+<span class="nc" id="L136">            } else {</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                for (Asset asset : assets) {</span>
+                    // Formato localizado para búsqueda simple
+<span class="nc" id="L139">                    String line = String.format(view.getLocalizedText(&quot;msg.format.assetSimpleDetail&quot;), </span>
+<span class="nc" id="L140">                        asset.getName(), asset.getActualPrice());</span>
+<span class="nc" id="L141">                    view.printText(line);</span>
+                }
+            }
+<span class="nc" id="L144">        } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L145">            view.printText(e.getMessage());</span>
+<span class="nc" id="L146">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L147">            view.showMessageByKey(&quot;msg.error.system&quot;);</span>
+<span class="nc" id="L148">            view.printText(e.getMessage());</span>
+        }
+<span class="nc" id="L150">    }</span>
+    public void handleFilterByType() {
+        try {
+<span class="nc" id="L153">            view.printText(&quot;\n--- BUSCAR ACTIVOS POR TIPO ---&quot;);</span>
+<span class="nc" id="L154">            String typeStr = view.readStringInput(&quot;Ingrese Tipo de Activo (BOND, STOCK, ETF, PROPERTY, BADGE, CRYPTO, NFT)&quot;);</span>
+            
+<span class="nc" id="L156">            AssetType type = AssetType.valueOf(typeStr.toUpperCase());</span>
+<span class="nc" id="L157">            List&lt;Asset&gt; assets = assetService.findByType(type);</span>
+
+<span class="nc bnc" id="L159" title="All 2 branches missed.">            if (assets.isEmpty()) {</span>
+<span class="nc" id="L160">                view.printText(&quot;No se encontraron activos de ese tipo.&quot;);</span>
+<span class="nc" id="L161">            } else {</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                for (Asset asset : assets) {</span>
+<span class="nc" id="L163">                    view.printText(String.format(&quot;- %s | Precio: $%.2f | Riesgo (1-5): %d&quot;, </span>
+<span class="nc" id="L164">                        asset.getName(), asset.getActualPrice(), asset.getAssetType().getRiskLevel()));</span>
+                }
+            }
+<span class="nc" id="L167">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L168">            view.printText(&quot;Error: Tipo de activo inválido. Debe escribir uno de los tipos permitidos.&quot;);</span>
+<span class="nc" id="L169">        } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L170">            view.printText(e.getMessage());</span>
+        }
+<span class="nc" id="L172">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Asset.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">co.edu.uptc.model</a> &gt; <span class="el_source">Asset.java</span></div><h1>Asset.java</h1><pre class="source lang-java linenums">package co.edu.uptc.model;
+
+import com.google.gson.annotations.SerializedName;
+
+import co.edu.uptc.model.enums.AssetType;
+
+public class Asset { //Activo
+    private String id;
+    private String name;
+    private AssetType assetType;
+    private double actualPrice;
+    private double volatility;
+
+    /** Constructor vacío de la clase Asset. */
+<span class="fc" id="L15">    public Asset() {</span>
+<span class="fc" id="L16">    }</span>
+
+<span class="fc" id="L18">    public Asset(String id, String name, AssetType assetType, double actualPrice, double volatility) {</span>
+<span class="fc" id="L19">        this.id = id;</span>
+<span class="fc" id="L20">        this.name = name;</span>
+<span class="fc" id="L21">        this.assetType = assetType;</span>
+<span class="fc" id="L22">        this.actualPrice = actualPrice;</span>
+<span class="fc" id="L23">        this.volatility = volatility;</span>
+<span class="fc" id="L24">    }</span>
+
+    public String getId() {
+<span class="fc" id="L27">        return id;</span>
+    }
+    public void setId(String id) {
+<span class="nc" id="L30">        this.id = id;</span>
+<span class="nc" id="L31">    }</span>
+    public String getName() {
+<span class="nc" id="L33">        return name;</span>
+    }
+    public void setName(String name) {
+<span class="nc" id="L36">        this.name = name;</span>
+<span class="nc" id="L37">    }</span>
+    public AssetType getAssetType() {
+<span class="fc" id="L39">        return assetType;</span>
+    }
+    public void setAssetType(AssetType assetType) {
+<span class="nc" id="L42">        this.assetType = assetType;</span>
+<span class="nc" id="L43">    }</span>
+    public double getActualPrice() {
+<span class="fc" id="L45">        return actualPrice;</span>
+    }
+    public void setActualPrice(double actualPrice) {
+<span class="fc" id="L48">        this.actualPrice = actualPrice;</span>
+<span class="fc" id="L49">    }</span>
+    public double getVolatility() {
+<span class="fc" id="L51">        return volatility;</span>
+    }
+    public void setVolatility(double volatility) {
+<span class="nc" id="L54">        this.volatility = volatility;</span>
+<span class="nc" id="L55">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L59">        return &quot;Asset [id=&quot; + id + &quot;, name=&quot; + name + &quot;, assetType=&quot; + assetType + &quot;, actualPrice=&quot; + actualPrice</span>
+<span class="nc" id="L60">                + &quot;, volatility=&quot; + volatility + &quot;]&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

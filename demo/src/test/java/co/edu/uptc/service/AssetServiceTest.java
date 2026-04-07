@@ -1,6 +1,7 @@
 package co.edu.uptc.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.Type;
@@ -42,5 +43,51 @@ class AssetServiceTest {
     @Test
     void getPrice_throwsWhenAssetMissing() {
         assertThrows(AssetNotFoundException.class, () -> service.getPrice("unknown"));
+    }
+
+    @Test
+    void findById_returnsNullWhenMissing() {
+        assertNull(service.findById("missing"));
+    }
+
+    @Test
+    void listAssets_returnsAllCreated() {
+        service.createAsset("A", "One", AssetType.BOND, 1.0, 0.0);
+        service.createAsset("B", "Two", AssetType.STOCK, 2.0, 0.1);
+
+        assertEquals(2, service.listAssets().size());
+    }
+
+    @Test
+    void findByType_filtersCorrectly() {
+        service.createAsset("b1", "Bond", AssetType.BOND, 5.0, 0.0);
+        service.createAsset("s1", "Stock", AssetType.STOCK, 8.0, 0.0);
+
+        List<Asset> bonds = service.findByType(AssetType.BOND);
+        assertEquals(1, bonds.size());
+        assertEquals("b1", bonds.get(0).getId());
+    }
+
+    @Test
+    void findByPriceRange_includesOnlyInRange() {
+        service.createAsset("p1", "Low", AssetType.BOND, 10.0, 0.0);
+        service.createAsset("p2", "Mid", AssetType.BOND, 25.0, 0.0);
+        service.createAsset("p3", "High", AssetType.BOND, 100.0, 0.0);
+
+        List<Asset> mid = service.findByPriceRange(20.0, 30.0);
+        assertEquals(1, mid.size());
+        assertEquals("p2", mid.get(0).getId());
+    }
+
+    @Test
+    void updAssetPrice_updatesStoredPrice() {
+        service.createAsset("u1", "Up", AssetType.ETF, 30.0, 0.0);
+        service.updAssetPrice("u1", 45.5);
+        assertEquals(45.5, service.getPrice("u1"), 0.0001);
+    }
+
+    @Test
+    void updAssetPrice_throwsWhenIdUnknown() {
+        assertThrows(AssetNotFoundException.class, () -> service.updAssetPrice("nope", 1.0));
     }
 }
