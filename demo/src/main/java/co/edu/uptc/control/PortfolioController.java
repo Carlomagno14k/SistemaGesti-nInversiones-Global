@@ -81,6 +81,11 @@ public class PortfolioController {
             LocalDate startDate = promptForDate("msg.input.startDate");
             LocalDate endDate = promptForDate("msg.input.endDate");
 
+            if (startDate.isAfter(endDate)) {
+                view.showMessageByKey("msg.error.invalidDateRange");
+                return;
+            }
+
             List<Investment> allInvestments = investmentService.listInvestments();
             double totalEarnings = portfolioService.calculateEarningsByPeriod(allInvestments, startDate, endDate);
 

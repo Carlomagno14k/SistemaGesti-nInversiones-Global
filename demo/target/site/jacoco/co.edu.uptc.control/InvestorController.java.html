@@ -53,51 +53,53 @@ public void handleCreateInvestor() {
 <span class="nc" id="L53">        investorService.createInvestor(id, name, email, capital, riskProfile, new ArrayList&lt;&gt;());</span>
 <span class="nc" id="L54">        view.showMessageByKey(&quot;msg.success.investorCreated&quot;);</span>
 
-<span class="nc" id="L56">  } catch (IllegalArgumentException e) {</span>
-    // Manejo de errores de validación específicos
-<span class="nc bnc" id="L58" title="All 4 branches missed.">    switch (e.getMessage()) {</span>
-        case &quot;ID_ALREADY_EXISTS&quot;:
-<span class="nc" id="L60">            view.showMessageByKey(&quot;msg.error.idAlreadyExists&quot;);</span>
-<span class="nc" id="L61">            break;</span>
-        case &quot;NEGATIVE_CAPITAL&quot;:
-<span class="nc" id="L63">            view.showMessageByKey(&quot;msg.error.negativeCapital&quot;);</span>
-<span class="nc" id="L64">            break;</span>
-        case &quot;INVALID_RISK&quot;:
-<span class="nc" id="L66">            view.showMessageByKey(&quot;msg.error.invalidRisk&quot;);</span>
-<span class="nc" id="L67">            break;</span>
-        default:
-<span class="nc" id="L69">            view.printText(e.getMessage());</span>
-    }
-}
-<span class="nc" id="L72">}</span>
+<span class="nc" id="L56">        } catch (IllegalArgumentException e) {</span>
+<span class="nc bnc" id="L57" title="All 5 branches missed.">            switch (e.getMessage()) {</span>
+                case &quot;ID_ALREADY_EXISTS&quot;:
+<span class="nc" id="L59">                    view.showMessageByKey(&quot;msg.error.idAlreadyExists&quot;);</span>
+<span class="nc" id="L60">                    break;</span>
+                case &quot;NEGATIVE_CAPITAL&quot;:
+<span class="nc" id="L62">                    view.showMessageByKey(&quot;msg.error.negativeCapital&quot;);</span>
+<span class="nc" id="L63">                    break;</span>
+                case &quot;INVALID_RISK&quot;:
+<span class="nc" id="L65">                    view.showMessageByKey(&quot;msg.error.invalidRisk&quot;);</span>
+<span class="nc" id="L66">                    break;</span>
+                case &quot;INVALID_INVESTOR_ID_FORMAT&quot;:
+<span class="nc" id="L68">                    view.showMessageByKey(&quot;msg.error.invalidInvestorIdFormat&quot;);</span>
+<span class="nc" id="L69">                    break;</span>
+                default:
+<span class="nc" id="L71">                    view.printText(e.getMessage());</span>
+            }
+        }
+<span class="nc" id="L74">    }</span>
     /**
      * Maneja el proceso de inicio de sesión de un inversionista.
      * @return El ID del inversionista si el login es exitoso, o null si falla/cancela.
      */
     public String handleLogin() {
         try {
-<span class="nc" id="L79">            view.showMessageByKey(&quot;msg.title.login&quot;);</span>
+<span class="nc" id="L81">            view.showMessageByKey(&quot;msg.title.login&quot;);</span>
             // Si el usuario escribe X, readStringInput lanzara OperationCancelledException
-<span class="nc" id="L81">            String id = view.readStringInput(&quot;msg.input.loginId&quot;);</span>
+<span class="nc" id="L83">            String id = view.readStringInput(&quot;msg.input.loginId&quot;);</span>
 
-<span class="nc" id="L83">            Investor loggedInUser = investorService.findById(id);</span>
+<span class="nc" id="L85">            Investor loggedInUser = investorService.findById(id);</span>
 
-<span class="nc bnc" id="L85" title="All 2 branches missed.">            if (loggedInUser != null) {</span>
-<span class="nc" id="L86">                view.showMessageByKey(&quot;msg.success.loginWelcome&quot;);</span>
-<span class="nc" id="L87">                view.printText(loggedInUser.getName()); </span>
-<span class="nc" id="L88">                return loggedInUser.getId(); </span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            if (loggedInUser != null) {</span>
+<span class="nc" id="L88">                view.showMessageByKey(&quot;msg.success.loginWelcome&quot;);</span>
+<span class="nc" id="L89">                view.printText(loggedInUser.getName()); </span>
+<span class="nc" id="L90">                return loggedInUser.getId(); </span>
             } else {
-<span class="nc" id="L90">                view.showMessageByKey(&quot;msg.error.loginFailed&quot;);</span>
-<span class="nc" id="L91">                return null;</span>
+<span class="nc" id="L92">                view.showMessageByKey(&quot;msg.error.loginFailed&quot;);</span>
+<span class="nc" id="L93">                return null;</span>
             }
-<span class="nc" id="L93">        } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L95">        } catch (OperationCancelledException e) {</span>
             // Atrapamos la excepcion si el usuario decide cancelar el login
-<span class="nc" id="L95">            view.printText(e.getMessage());</span>
-<span class="nc" id="L96">            return null;</span>
-<span class="nc" id="L97">        } catch (RuntimeException e) {</span>
-<span class="nc" id="L98">            view.showMessageByKey(&quot;msg.error.loginSystem&quot;);</span>
-<span class="nc" id="L99">            view.printText(e.getMessage());</span>
-<span class="nc" id="L100">            return null;</span>
+<span class="nc" id="L97">            view.printText(e.getMessage());</span>
+<span class="nc" id="L98">            return null;</span>
+<span class="nc" id="L99">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L100">            view.showMessageByKey(&quot;msg.error.loginSystem&quot;);</span>
+<span class="nc" id="L101">            view.printText(e.getMessage());</span>
+<span class="nc" id="L102">            return null;</span>
         }
     }
 
@@ -106,68 +108,95 @@ public void handleCreateInvestor() {
      */
     public void handleListInvestors() {
         try {
-<span class="nc" id="L109">            view.showMessageByKey(&quot;msg.title.listInvestors&quot;);</span>
+<span class="nc" id="L111">            view.showMessageByKey(&quot;msg.title.listInvestors&quot;);</span>
             
-<span class="nc" id="L111">            List&lt;Investor&gt; investors = investorService.listInversionists();</span>
+<span class="nc" id="L113">            List&lt;Investor&gt; investors = investorService.listInversionists();</span>
 
-<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (investors.isEmpty()) {</span>
-<span class="nc" id="L114">                view.showMessageByKey(&quot;msg.error.noInvestors&quot;);</span>
-<span class="nc" id="L115">            } else {</span>
-<span class="nc bnc" id="L116" title="All 2 branches missed.">                for (Investor inv : investors) {</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">            if (investors.isEmpty()) {</span>
+<span class="nc" id="L116">                view.showMessageByKey(&quot;msg.error.noInvestors&quot;);</span>
+<span class="nc" id="L117">            } else {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                for (Investor inv : investors) {</span>
                     // Cambiamos las palabras en español por términos universales en el formateo de datos
-<span class="nc" id="L118">                    view.printText(String.format(&quot;- [ID: %s] %s | Email: %s | Capital: $%.2f | Risk: %s&quot;,</span>
-<span class="nc" id="L119">                            inv.getId(), inv.getName(), inv.getEmail(), inv.getAvailableCapital(), inv.getRiskProfile()));</span>
+<span class="nc" id="L120">                    view.printText(String.format(&quot;- [ID: %s] %s | Email: %s | Capital: $%.2f | Risk: %s&quot;,</span>
+<span class="nc" id="L121">                            inv.getId(), inv.getName(), inv.getEmail(), inv.getAvailableCapital(), inv.getRiskProfile()));</span>
                 }
             }
-<span class="nc" id="L122">        } catch (RuntimeException e) {</span>
-<span class="nc" id="L123">            view.showMessageByKey(&quot;msg.error.listInvestors&quot;);</span>
-<span class="nc" id="L124">            view.printText(e.getMessage());</span>
+<span class="nc" id="L124">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L125">            view.showMessageByKey(&quot;msg.error.listInvestors&quot;);</span>
+<span class="nc" id="L126">            view.printText(e.getMessage());</span>
         }
-<span class="nc" id="L126">    }</span>
+<span class="nc" id="L128">    }</span>
 
     /**
      * Maneja la modificación de datos de un inversionista existente.
      */
     public void handleUpdateInvestor() {
         try {
-<span class="nc" id="L133">            view.showMessageByKey(&quot;msg.title.updateInvestor&quot;);</span>
+<span class="nc" id="L135">            view.showMessageByKey(&quot;msg.title.updateInvestor&quot;);</span>
 
-<span class="nc" id="L135">            String id = view.readStringInput(&quot;msg.input.investorId&quot;);</span>
-<span class="nc" id="L136">            view.showMessageByKey(&quot;msg.info.leaveBlank&quot;);</span>
+<span class="nc" id="L137">            String id = view.readStringInput(&quot;msg.input.investorId&quot;);</span>
+<span class="nc" id="L138">            view.showMessageByKey(&quot;msg.info.leaveBlank&quot;);</span>
 
-<span class="nc" id="L138">            String newName = view.readStringInput(&quot;msg.input.newName&quot;);</span>
-<span class="nc" id="L139">            String newEmail = view.readStringInput(&quot;msg.input.newEmail&quot;);</span>
-<span class="nc" id="L140">            String newRiskProfile = view.readStringInput(&quot;msg.input.newRiskProfile&quot;);</span>
+<span class="nc" id="L140">            String newName = view.readStringInput(&quot;msg.input.newName&quot;);</span>
+<span class="nc" id="L141">            String newEmail = view.readStringInput(&quot;msg.input.newEmail&quot;);</span>
+<span class="nc" id="L142">            String newRiskProfile = view.readStringInput(&quot;msg.input.newRiskProfile&quot;).trim().toUpperCase();</span>
+            
+    
+    RiskProfile riskProfile;
 
-<span class="nc" id="L142">            investorService.updateInvestorAtributes(id, newName, newEmail, newRiskProfile);</span>
-<span class="nc" id="L143">            view.showMessageByKey(&quot;msg.success.investorUpdated&quot;);</span>
+<span class="nc bnc" id="L147" title="All 4 branches missed.">            switch (newRiskProfile) {</span>
+        // Casos para Conservador
+        case &quot;CONSERVADOR&quot;: 
+        case &quot;CONSERVATIVE&quot;: 
+<span class="nc" id="L151">            riskProfile = RiskProfile.CONSERVATIVE; </span>
+<span class="nc" id="L152">            break;</span>
+            
+        // Casos para Moderado
+        case &quot;MODERADO&quot;: 
+        case &quot;MODERATE&quot;: 
+<span class="nc" id="L157">            riskProfile = RiskProfile.MODERATE; </span>
+<span class="nc" id="L158">            break;</span>
+            
+        // Casos para Agresivo
+        case &quot;AGRESIVO&quot;: 
+        case &quot;AGGRESSIVE&quot;: 
+<span class="nc" id="L163">            riskProfile = RiskProfile.AGGRESSIVE; </span>
+<span class="nc" id="L164">            break;</span>
+            
+        default: 
+<span class="nc" id="L167">            throw new IllegalArgumentException(&quot;INVALID_RISK&quot;);</span>
+    }
 
-<span class="nc" id="L145">        } catch (InvestorNotFoundException | IllegalArgumentException e) {</span>
-<span class="nc" id="L146">            view.printText(e.getMessage()); </span>
-<span class="nc" id="L147">        } catch (RuntimeException e) {</span>
-<span class="nc" id="L148">            view.showMessageByKey(&quot;msg.error.update&quot;);</span>
-<span class="nc" id="L149">            view.printText(e.getMessage());</span>
+
+<span class="nc" id="L171">            investorService.updateInvestorAtributes(id, newName, newEmail, riskProfile);</span>
+<span class="nc" id="L172">            view.showMessageByKey(&quot;msg.success.investorUpdated&quot;);</span>
+
+<span class="nc" id="L174">        } catch (InvestorNotFoundException | IllegalArgumentException e) {</span>
+<span class="nc" id="L175">            view.printText(e.getMessage()); </span>
+<span class="nc" id="L176">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L177">            view.showMessageByKey(&quot;msg.error.update&quot;);</span>
+<span class="nc" id="L178">            view.printText(e.getMessage());</span>
         }
-<span class="nc" id="L151">    }</span>
+<span class="nc" id="L180">    }</span>
 
     /**
      * Maneja la eliminación de un inversionista.
      */
     public void handleDeleteInvestor() {
         try {
-<span class="nc" id="L158">            view.showMessageByKey(&quot;msg.title.deleteInvestor&quot;);</span>
-<span class="nc" id="L159">            String id = view.readStringInput(&quot;msg.input.investorId&quot;);</span>
+<span class="nc" id="L187">            view.showMessageByKey(&quot;msg.title.deleteInvestor&quot;);</span>
+<span class="nc" id="L188">            String id = view.readStringInput(&quot;msg.input.investorId&quot;);</span>
 
-<span class="nc" id="L161">            boolean deleted = investorService.delete(id);</span>
-<span class="nc bnc" id="L162" title="All 2 branches missed.">            if (deleted) {</span>
-<span class="nc" id="L163">                view.showMessageByKey(&quot;msg.success.investorDeleted&quot;);</span>
-<span class="nc" id="L164">            } else {</span>
-<span class="nc" id="L165">                view.showMessageByKey(&quot;msg.error.deleteNotFound&quot;);</span>
+<span class="nc" id="L190">            boolean deleted = investorService.delete(id);</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">            if (deleted) {</span>
+<span class="nc" id="L192">                view.showMessageByKey(&quot;msg.success.investorDeleted&quot;);</span>
+<span class="nc" id="L193">            } else {</span>
+<span class="nc" id="L194">                view.showMessageByKey(&quot;msg.error.deleteNotFound&quot;);</span>
             }
-<span class="nc" id="L167">        } catch (RuntimeException e) {</span>
-<span class="nc" id="L168">            view.showMessageByKey(&quot;msg.error.delete&quot;);</span>
-<span class="nc" id="L169">            view.printText(e.getMessage());</span>
+<span class="nc" id="L196">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L197">            view.showMessageByKey(&quot;msg.error.delete&quot;);</span>
+<span class="nc" id="L198">            view.printText(e.getMessage());</span>
         }
-<span class="nc" id="L171">    }</span>
+<span class="nc" id="L200">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

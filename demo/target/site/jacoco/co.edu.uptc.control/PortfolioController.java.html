@@ -81,89 +81,94 @@ public class PortfolioController {
 <span class="nc" id="L81">            LocalDate startDate = promptForDate(&quot;msg.input.startDate&quot;);</span>
 <span class="nc" id="L82">            LocalDate endDate = promptForDate(&quot;msg.input.endDate&quot;);</span>
 
-<span class="nc" id="L84">            List&lt;Investment&gt; allInvestments = investmentService.listInvestments();</span>
-<span class="nc" id="L85">            double totalEarnings = portfolioService.calculateEarningsByPeriod(allInvestments, startDate, endDate);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (startDate.isAfter(endDate)) {</span>
+<span class="nc" id="L85">                view.showMessageByKey(&quot;msg.error.invalidDateRange&quot;);</span>
+<span class="nc" id="L86">                return;</span>
+            }
 
-<span class="nc" id="L87">            printReportResult(startDate, endDate, totalEarnings);</span>
+<span class="nc" id="L89">            List&lt;Investment&gt; allInvestments = investmentService.listInvestments();</span>
+<span class="nc" id="L90">            double totalEarnings = portfolioService.calculateEarningsByPeriod(allInvestments, startDate, endDate);</span>
 
-<span class="nc" id="L89">        } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L92">            printReportResult(startDate, endDate, totalEarnings);</span>
+
+<span class="nc" id="L94">        } catch (OperationCancelledException e) {</span>
             // Atrapa limpiamente la cancelación (&quot;X&quot;)
-<span class="nc" id="L91">            view.printText(e.getMessage());</span>
-<span class="nc" id="L92">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L96">            view.printText(e.getMessage());</span>
+<span class="nc" id="L97">        } catch (IllegalArgumentException e) {</span>
             // Atrapa errores de negocio (fechas invertidas)
-<span class="nc" id="L94">            view.printText(&quot;Error: &quot; + e.getMessage()); </span>
-<span class="nc" id="L95">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L99">            view.printText(&quot;Error: &quot; + e.getMessage()); </span>
+<span class="nc" id="L100">        } catch (RuntimeException e) {</span>
             // Atrapa cualquier otro fallo inesperado
-<span class="nc" id="L97">            view.showMessageByKey(&quot;msg.error.system&quot;);</span>
-<span class="nc" id="L98">            view.printText(e.getMessage());</span>
+<span class="nc" id="L102">            view.showMessageByKey(&quot;msg.error.system&quot;);</span>
+<span class="nc" id="L103">            view.printText(e.getMessage());</span>
         }
-<span class="nc" id="L100">    }</span>
+<span class="nc" id="L105">    }</span>
 
     /**
      * Genera un reporte de ganancias y pérdidas de UN SOLO INVERSIONISTA en un rango de fechas.
      */
     public void handleInvestorEarningsReport(String investorId) {
         try {
-<span class="nc" id="L107">            view.showMessageByKey(&quot;msg.title.investorReport&quot;);</span>
+<span class="nc" id="L112">            view.showMessageByKey(&quot;msg.title.investorReport&quot;);</span>
             
-<span class="nc" id="L109">            Investor investor = investorService.findById(investorId);</span>
-<span class="nc bnc" id="L110" title="All 2 branches missed.">            if (investor == null) {</span>
-<span class="nc" id="L111">                view.showMessageByKey(&quot;msg.error.investorNotFound&quot;);</span>
-<span class="nc" id="L112">                return;</span>
+<span class="nc" id="L114">            Investor investor = investorService.findById(investorId);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">            if (investor == null) {</span>
+<span class="nc" id="L116">                view.showMessageByKey(&quot;msg.error.investorNotFound&quot;);</span>
+<span class="nc" id="L117">                return;</span>
             }
 
-<span class="nc" id="L115">            double totalInvested = portfolioService.calculateTotalInvested(investor);</span>
-<span class="nc" id="L116">            double currentValue = portfolioService.calculateCurrentPortfolioValue(investor);</span>
-<span class="nc" id="L117">            double yield = portfolioService.calculateYieldPercentage(investor);</span>
-<span class="nc" id="L118">            double risk = portfolioService.calculatePortfolioRisk(investor);</span>
+<span class="nc" id="L120">            double totalInvested = portfolioService.calculateTotalInvested(investor);</span>
+<span class="nc" id="L121">            double currentValue = portfolioService.calculateCurrentPortfolioValue(investor);</span>
+<span class="nc" id="L122">            double yield = portfolioService.calculateYieldPercentage(investor);</span>
+<span class="nc" id="L123">            double risk = portfolioService.calculatePortfolioRisk(investor);</span>
 
-<span class="nc" id="L120">            view.printText(&quot;\n&quot; + view.getLocalizedText(&quot;msg.report.portfolioHeader&quot;));</span>
-<span class="nc" id="L121">            view.printText(view.getLocalizedText(&quot;msg.report.investorName&quot;) + &quot; &quot; + investor.getName());</span>
-<span class="nc" id="L122">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.initialInvested&quot;), totalInvested));</span>
-<span class="nc" id="L123">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.currentValue&quot;), currentValue));</span>
-<span class="nc" id="L124">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.netYield&quot;), yield));</span>
-<span class="nc" id="L125">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.averageRisk&quot;), risk));</span>
+<span class="nc" id="L125">            view.printText(&quot;\n&quot; + view.getLocalizedText(&quot;msg.report.portfolioHeader&quot;));</span>
+<span class="nc" id="L126">            view.printText(view.getLocalizedText(&quot;msg.report.investorName&quot;) + &quot; &quot; + investor.getName());</span>
+<span class="nc" id="L127">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.initialInvested&quot;), totalInvested));</span>
+<span class="nc" id="L128">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.currentValue&quot;), currentValue));</span>
+<span class="nc" id="L129">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.netYield&quot;), yield));</span>
+<span class="nc" id="L130">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.averageRisk&quot;), risk));</span>
 
-<span class="nc" id="L127">        } catch (OperationCancelledException e) {</span>
-<span class="nc" id="L128">            view.printText(e.getMessage());</span>
-<span class="nc" id="L129">        } catch (RuntimeException e) {</span>
-<span class="nc" id="L130">            view.printText(view.getLocalizedText(&quot;msg.error.system&quot;) + &quot; &quot; + e.getMessage());</span>
+<span class="nc" id="L132">        } catch (OperationCancelledException e) {</span>
+<span class="nc" id="L133">            view.printText(e.getMessage());</span>
+<span class="nc" id="L134">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L135">            view.printText(view.getLocalizedText(&quot;msg.error.system&quot;) + &quot; &quot; + e.getMessage());</span>
         }
-<span class="nc" id="L132">    }</span>
+<span class="nc" id="L137">    }</span>
     public void handleExportReportCSV() {
         try {
-<span class="nc" id="L135">            view.printText(&quot;\n&quot; + view.getLocalizedText(&quot;msg.report.exportingCsv&quot;));</span>
-<span class="nc" id="L136">            List&lt;Investor&gt; investors = investorService.listInversionists();</span>
+<span class="nc" id="L140">            view.printText(&quot;\n&quot; + view.getLocalizedText(&quot;msg.report.exportingCsv&quot;));</span>
+<span class="nc" id="L141">            List&lt;Investor&gt; investors = investorService.listInversionists();</span>
             
-<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (investors.isEmpty()) {</span>
-<span class="nc" id="L139">                view.showMessageByKey(&quot;msg.error.notEnoughData&quot;);</span>
-<span class="nc" id="L140">                return;</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            if (investors.isEmpty()) {</span>
+<span class="nc" id="L144">                view.showMessageByKey(&quot;msg.error.notEnoughData&quot;);</span>
+<span class="nc" id="L145">                return;</span>
             }
 
-<span class="nc" id="L143">            String fileName = &quot;reporte_portafolio.csv&quot;;</span>
+<span class="nc" id="L148">            String fileName = &quot;reporte_portafolio.csv&quot;;</span>
             
-<span class="nc" id="L145">            try (FileWriter writer = new FileWriter(fileName)) {</span>
+<span class="nc" id="L150">            try (FileWriter writer = new FileWriter(fileName)) {</span>
                 // Las cabeceras del CSV las dejamos estándar (como llaves de datos)
-<span class="nc" id="L147">                writer.write(&quot;ID,Nombre,Email,CapitalDisponible,ValorPortafolioActual,Rendimiento(%),RiesgoPromedio\n&quot;);</span>
+<span class="nc" id="L152">                writer.write(&quot;ID,Nombre,Email,CapitalDisponible,ValorPortafolioActual,Rendimiento(%),RiesgoPromedio\n&quot;);</span>
                 
-<span class="nc bnc" id="L149" title="All 2 branches missed.">                for (Investor inv : investors) {</span>
-<span class="nc" id="L150">                    double currentVal = portfolioService.calculateCurrentPortfolioValue(inv);</span>
-<span class="nc" id="L151">                    double yield = portfolioService.calculateYieldPercentage(inv);</span>
-<span class="nc" id="L152">                    double risk = portfolioService.calculatePortfolioRisk(inv);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">                for (Investor inv : investors) {</span>
+<span class="nc" id="L155">                    double currentVal = portfolioService.calculateCurrentPortfolioValue(inv);</span>
+<span class="nc" id="L156">                    double yield = portfolioService.calculateYieldPercentage(inv);</span>
+<span class="nc" id="L157">                    double risk = portfolioService.calculatePortfolioRisk(inv);</span>
                     
-<span class="nc" id="L154">                    writer.write(String.format(&quot;%s,%s,%s,%.2f,%.2f,%.2f,%.4f\n&quot;, </span>
-<span class="nc" id="L155">                        inv.getId(), inv.getName(), inv.getEmail(), </span>
-<span class="nc" id="L156">                        inv.getAvailableCapital(), currentVal, yield, risk));</span>
+<span class="nc" id="L159">                    writer.write(String.format(&quot;%s,%s,%s,%.2f,%.2f,%.2f,%.4f\n&quot;, </span>
+<span class="nc" id="L160">                        inv.getId(), inv.getName(), inv.getEmail(), </span>
+<span class="nc" id="L161">                        inv.getAvailableCapital(), currentVal, yield, risk));</span>
                 }
-<span class="nc" id="L158">                view.printText(view.getLocalizedText(&quot;msg.success.exportCsv&quot;) + &quot; &quot; + fileName);</span>
-<span class="nc" id="L159">            } catch (IOException e) {</span>
-<span class="nc" id="L160">                view.printText(view.getLocalizedText(&quot;msg.error.exportCsv&quot;) + &quot; &quot; + e.getMessage());</span>
+<span class="nc" id="L163">                view.printText(view.getLocalizedText(&quot;msg.success.exportCsv&quot;) + &quot; &quot; + fileName);</span>
+<span class="nc" id="L164">            } catch (IOException e) {</span>
+<span class="nc" id="L165">                view.printText(view.getLocalizedText(&quot;msg.error.exportCsv&quot;) + &quot; &quot; + e.getMessage());</span>
             }
 
-<span class="nc" id="L163">        } catch (Exception e) {</span>
-<span class="nc" id="L164">            view.printText(view.getLocalizedText(&quot;msg.error.system&quot;) + &quot; &quot; + e.getMessage());</span>
+<span class="nc" id="L168">        } catch (Exception e) {</span>
+<span class="nc" id="L169">            view.printText(view.getLocalizedText(&quot;msg.error.system&quot;) + &quot; &quot; + e.getMessage());</span>
         }
-<span class="nc" id="L166">    }</span>
+<span class="nc" id="L171">    }</span>
 
     // ---------------- MÉTODOS AUXILIARES PRIVADOS ----------------
 
@@ -171,13 +176,13 @@ public class PortfolioController {
      * Método auxiliar para pedir una fecha y manejar el error de formato automáticamente.
      */
     private LocalDate promptForDate(String messageKey) {
-<span class="nc" id="L174">        while (true) {</span>
-<span class="nc" id="L175">            String dateStr = view.readStringInput(messageKey);</span>
+<span class="nc" id="L179">        while (true) {</span>
+<span class="nc" id="L180">            String dateStr = view.readStringInput(messageKey);</span>
             try {
-<span class="nc" id="L177">                return LocalDate.parse(dateStr);</span>
-<span class="nc" id="L178">            } catch (DateTimeParseException e) {</span>
+<span class="nc" id="L182">                return LocalDate.parse(dateStr);</span>
+<span class="nc" id="L183">            } catch (DateTimeParseException e) {</span>
                 // Ahora usamos el properties en lugar del texto en duro
-<span class="nc" id="L180">                view.showMessageByKey(&quot;msg.error.invalidDateFormat&quot;);</span>
+<span class="nc" id="L185">                view.showMessageByKey(&quot;msg.error.invalidDateFormat&quot;);</span>
             }
         }
     }
@@ -186,23 +191,23 @@ public class PortfolioController {
      * Método auxiliar para imprimir el resultado de forma estilizada y 100% bilingüe.
      */
     private void printReportResult(LocalDate start, LocalDate end, double earnings) {
-<span class="nc" id="L189">        view.printText(&quot;\n=========================================&quot;);</span>
+<span class="nc" id="L194">        view.printText(&quot;\n=========================================&quot;);</span>
         
         // Imprime el titulo usando String.format para inyectar las fechas en el texto traducido
-<span class="nc" id="L192">        view.printText(String.format(view.getLocalizedText(&quot;msg.report.header&quot;), start, end));</span>
+<span class="nc" id="L197">        view.printText(String.format(view.getLocalizedText(&quot;msg.report.header&quot;), start, end));</span>
         
-<span class="nc bnc" id="L194" title="All 2 branches missed.">        if (earnings &gt; 0) {</span>
-<span class="nc" id="L195">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.profit&quot;), earnings));</span>
-<span class="nc" id="L196">            view.showMessageByKey(&quot;msg.report.profitDesc&quot;);</span>
-<span class="nc bnc" id="L197" title="All 2 branches missed.">        } else if (earnings &lt; 0) {</span>
-<span class="nc" id="L198">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.loss&quot;), Math.abs(earnings)));</span>
-<span class="nc" id="L199">            view.showMessageByKey(&quot;msg.report.lossDesc&quot;);</span>
-<span class="nc" id="L200">        } else {</span>
-<span class="nc" id="L201">            view.showMessageByKey(&quot;msg.report.even&quot;);</span>
-<span class="nc" id="L202">            view.showMessageByKey(&quot;msg.report.evenDesc&quot;);</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        if (earnings &gt; 0) {</span>
+<span class="nc" id="L200">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.profit&quot;), earnings));</span>
+<span class="nc" id="L201">            view.showMessageByKey(&quot;msg.report.profitDesc&quot;);</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        } else if (earnings &lt; 0) {</span>
+<span class="nc" id="L203">            view.printText(String.format(view.getLocalizedText(&quot;msg.report.loss&quot;), Math.abs(earnings)));</span>
+<span class="nc" id="L204">            view.showMessageByKey(&quot;msg.report.lossDesc&quot;);</span>
+<span class="nc" id="L205">        } else {</span>
+<span class="nc" id="L206">            view.showMessageByKey(&quot;msg.report.even&quot;);</span>
+<span class="nc" id="L207">            view.showMessageByKey(&quot;msg.report.evenDesc&quot;);</span>
         }
         
-<span class="nc" id="L205">        view.printText(&quot;=========================================\n&quot;);</span>
-<span class="nc" id="L206">    }</span>
+<span class="nc" id="L210">        view.printText(&quot;=========================================\n&quot;);</span>
+<span class="nc" id="L211">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

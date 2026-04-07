@@ -43,26 +43,19 @@ public class InvestmentController {
             String assetId = view.readStringInput("msg.input.assetId");
             double amount = view.readDoubleInput("msg.input.amount");
 
-            Asset asset = assetService.findById(assetId);
-            if (asset == null) {
-                view.showMessageByKey("msg.error.assetNotFound");
-                return; 
-            }
-
             Investor investor = investorService.findById(investorId);
             if (investor == null) {
                 view.showMessageByKey("msg.error.investorNotFound");
                 return;
             }
 
-            double purchasePrice = asset.getActualPrice();
             LocalDate date = LocalDate.now();
             LocalTime time = LocalTime.now();
 
-            Investment inv= investmentService.createInvestment(
+            Investment inv = investmentService.createInvestment(
                 investmentId, investorId, assetId, amount,
-                purchasePrice, date, time, 
-                investor.getAvailableCapital(), investor.getRiskProfile(), asset.getAssetType()
+                0.0, date, time,
+                investor.getAvailableCapital(), investor.getRiskProfile()
             );
 
             investor.getInvestments().add(inv);
@@ -78,11 +71,32 @@ public class InvestmentController {
 
         } catch (OperationCancelledException e) {
             view.printText(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            handleInvestmentValidationError(e);
         } catch (InsufficientCapitalException | IncompatibleRiskProfileException e) {
             view.printText("Regla de Negocio: " + e.getMessage());
         } catch (RuntimeException e) {
             view.showMessageByKey("msg.error.system");
             view.printText(e.getMessage());
+        }
+    }
+
+    private void handleInvestmentValidationError(IllegalArgumentException e) {
+        switch (e.getMessage()) {
+            case "INVALID_INVESTMENT_ID_FORMAT" ->
+                view.showMessageByKey("msg.error.invalidInvestmentIdFormat");
+            case "DUPLICATE_INVESTMENT_ID" ->
+                view.showMessageByKey("msg.error.duplicateInvestmentId");
+            case "INVALID_INVESTOR_ID_FORMAT" ->
+                view.showMessageByKey("msg.error.invalidInvestorIdFormat");
+            case "INVALID_ASSET_ID_FORMAT" ->
+                view.showMessageByKey("msg.error.invalidAssetIdFormat");
+            case "ASSET_NOT_FOUND" ->
+                view.showMessageByKey("msg.error.assetNotFound");
+            case "INVALID_AMOUNT" ->
+                view.showMessageByKey("msg.error.invalidAmount");
+            default ->
+                view.printText(e.getMessage());
         }
     }
 
@@ -176,6 +190,14 @@ public class InvestmentController {
 
         } catch (OperationCancelledException e) {
             view.printText(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            if ("INVALID_ASSET_ID_FORMAT".equals(e.getMessage())) {
+                view.showMessageByKey("msg.error.invalidAssetIdFormat");
+            } else if ("NEGATIVE_PRICE_OR_VOLATILITY".equals(e.getMessage())) {
+                view.showMessageByKey("msg.error.negativePriceOrVolatility");
+            } else {
+                view.printText(e.getMessage());
+            }
         } catch (RuntimeException e) {
             view.printText("Error: " + e.getMessage());
         }

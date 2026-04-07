@@ -12,6 +12,7 @@ import co.edu.uptc.model.Investment;
 import co.edu.uptc.model.Investor;
 import co.edu.uptc.model.enums.RiskProfile;
 import co.edu.uptc.repository.JsonRepository;
+import co.edu.uptc.util.IdFormats;
 
 /**
  * Servicio de gestión de inversionistas: registro, consulta y actualización del capital
@@ -42,6 +43,11 @@ public class InvestorService {
   public void createInvestor(String id, String name, String email, double availableCapital, RiskProfile riskProfile,
                                List<Investment> inversions) {
         try {
+            final String normalizedId = IdFormats.normalizeInvestorId(id);
+            if (!IdFormats.isValidInvestorId(normalizedId)) {
+                throw new IllegalArgumentException("INVALID_INVESTOR_ID_FORMAT");
+            }
+
             // 1. Validar que el capital no sea negativo
             if (availableCapital < 0) {
                 throw new IllegalArgumentException("NEGATIVE_CAPITAL");
@@ -52,7 +58,7 @@ public class InvestorService {
 
             // 3. Comprobar si ya existe un inversionista con el mismo ID (ignorando mayúsculas)
             boolean exists = currentInvestors.stream()
-                    .anyMatch(inv -> inv.getId().equalsIgnoreCase(id));
+                    .anyMatch(inv -> inv.getId().equalsIgnoreCase(normalizedId));
 
             if (exists) {
                 // Lanzamos una excepción con un mensaje específico para identificar el error de duplicado
@@ -61,7 +67,7 @@ public class InvestorService {
 
             // 4. Si pasa las validaciones, creamos el objeto y lo guardamos
             // Se inicializa con una lista de inversiones vacía para evitar valores nulos en el JSON
-            Investor newInvestor = new Investor(id, name, email, availableCapital, riskProfile, new ArrayList<>());
+            Investor newInvestor = new Investor(normalizedId, name, email, availableCapital, riskProfile, new ArrayList<>());
             repo.save(newInvestor);
 
         } catch (IllegalArgumentException e) {
@@ -94,7 +100,7 @@ public class InvestorService {
         boolean isUpdated = false;
     
         for (int i = 0; i < investors.size(); i++) {
-            if (investors.get(i).getId().equals(updatedInvestor.getId())) {
+            if (investors.get(i).getId().equalsIgnoreCase(updatedInvestor.getId())) {
                 investors.set(i, updatedInvestor); // 🔥 reemplazo completo
                 isUpdated = true;
                 break;
@@ -113,7 +119,7 @@ public class InvestorService {
         boolean isUpdated = false;
     
         for (Investor investor : investors) {
-            if (investor.getId().equals(id)) {
+            if (investor.getId().equalsIgnoreCase(id)) {
     
                 if (newName != null && !newName.trim().isEmpty()) {
                     investor.setName(newName);
@@ -140,7 +146,7 @@ public class InvestorService {
     //Eliminar 
     public boolean delete(String id) {
         List<Investor> investors = repo.findAll();
-        boolean beDeleted = investors.removeIf(m -> m.getId().equals(id));
+        boolean beDeleted = investors.removeIf(m -> m.getId().equalsIgnoreCase(id));
         if (beDeleted) {
             repo.replaceAll(investors);
             return true;
@@ -159,7 +165,7 @@ public class InvestorService {
         try {
             return repo.findAll()
                     .stream()
-                    .filter(i -> i.getId().equals(id))
+                    .filter(i -> i.getId().equalsIgnoreCase(IdFormats.normalizeInvestorId(id)))
                     .findFirst()
                     .orElse(null);
         } catch (RuntimeException e) {
@@ -181,7 +187,7 @@ public class InvestorService {
             List<Investor> investors = repo.findAll();
 
             for (Investor inv : investors) {
-                if (inv.getId().equals(id)) {
+                if (inv.getId().equalsIgnoreCase(IdFormats.normalizeInvestorId(id))) {
                     if (inv.getAvailableCapital() < purchaseValue) {
                         throw new InsufficientCapitalException("Capital insuficiente para completar la operación.");
                     }

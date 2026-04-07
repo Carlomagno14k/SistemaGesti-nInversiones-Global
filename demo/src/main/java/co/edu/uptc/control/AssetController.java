@@ -58,7 +58,15 @@ public class AssetController {
         } catch (OperationCancelledException e) {
             view.printText(e.getMessage());
         } catch (IllegalArgumentException e) {
-            view.showMessageByKey("msg.error.invalidAssetType");
+            if ("INVALID_ASSET_ID_FORMAT".equals(e.getMessage())) {
+                view.showMessageByKey("msg.error.invalidAssetIdFormat");
+            } else if ("DUPLICATE_ASSET_ID".equals(e.getMessage())) {
+                view.showMessageByKey("msg.error.duplicateAssetId");
+            } else if ("NEGATIVE_PRICE_OR_VOLATILITY".equals(e.getMessage())) {
+                view.showMessageByKey("msg.error.negativePriceOrVolatility");
+            } else {
+                view.showMessageByKey("msg.error.invalidAssetType");
+            }
         } catch (RuntimeException e) {
             view.showMessageByKey("msg.error.system");
             view.printText(e.getMessage());
@@ -111,6 +119,14 @@ public class AssetController {
 
         } catch (OperationCancelledException e) {
             view.printText(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            if ("INVALID_ASSET_ID_FORMAT".equals(e.getMessage())) {
+                view.showMessageByKey("msg.error.invalidAssetIdFormat");
+            } else if ("NEGATIVE_PRICE_OR_VOLATILITY".equals(e.getMessage())) {
+                view.showMessageByKey("msg.error.negativePriceOrVolatility");
+            } else {
+                view.printText(e.getMessage());
+            }
         } catch (AssetNotFoundException e) {
             view.printText(e.getMessage());
         } catch (RuntimeException e) {
@@ -128,6 +144,15 @@ public class AssetController {
             
             double minPrice = view.readDoubleInput("msg.input.minPrice");
             double maxPrice = view.readDoubleInput("msg.input.maxPrice");
+
+            if (minPrice < 0 || maxPrice < 0) {
+                view.showMessageByKey("msg.error.negativePriceValues");
+                return;
+            }
+            if (minPrice > maxPrice) {
+                view.showMessageByKey("msg.error.invalidPriceRange");
+                return;
+            }
 
             List<Asset> assets = assetService.findByPriceRange(minPrice, maxPrice);
 

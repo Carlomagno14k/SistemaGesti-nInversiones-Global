@@ -6,21 +6,22 @@ demo,co.edu.uptc.exception,OperationCancelledException,4,0,0,0,2,0,1,0,1,0
 demo,co.edu.uptc.exception,IncompatibleRiskProfileException,0,4,0,0,0,2,0,1,0,1
 demo,co.edu.uptc.service,AssetService.new TypeToken() {...},6,0,0,0,1,0,1,0,1,0
 demo,co.edu.uptc.service,PortfolioService,9,230,13,23,2,51,13,15,0,10
-demo,co.edu.uptc.service,InvestmentService,41,144,1,9,11,32,3,15,2,11
-demo,co.edu.uptc.service,InvestorService,168,187,26,16,43,49,20,15,4,10
+demo,co.edu.uptc.service,InvestmentService,71,188,7,15,18,44,9,17,2,13
+demo,co.edu.uptc.service,InvestorService,154,195,23,17,39,51,19,15,4,10
 demo,co.edu.uptc.service,InvestmentService.new TypeToken() {...},6,0,0,0,1,0,1,0,1,0
 demo,co.edu.uptc.service,InvestorService.new TypeToken() {...},6,0,0,0,1,0,1,0,1,0
-demo,co.edu.uptc.service,AssetService,37,141,1,13,9,36,2,17,1,11
-demo,co.edu.uptc.model.enums,AssetType,0,92,0,0,0,13,0,3,0,3
+demo,co.edu.uptc.service,AssetService,63,171,7,19,16,43,8,17,1,11
+demo,co.edu.uptc.model.enums,AssetType,0,63,0,0,0,12,0,3,0,3
 demo,co.edu.uptc.model.enums,RiskProfile,0,48,0,0,0,8,0,3,0,3
-demo,co.edu.uptc.repository,JsonRepository,38,110,3,1,13,30,4,10,2,10
-demo,co.edu.uptc.view,ConsoleView,291,0,4,0,73,0,18,0,16,0
+demo,co.edu.uptc.repository,JsonRepository,38,105,3,1,13,31,4,10,2,10
+demo,co.edu.uptc.view,ConsoleView,291,0,4,0,74,0,18,0,16,0
 demo,co.edu.uptc.view,Main,15,0,0,0,5,0,2,0,2,0
-demo,co.edu.uptc.control,InvestmentController,581,0,24,0,119,0,18,0,6,0
-demo,co.edu.uptc.control,PortfolioController,561,0,14,0,107,0,15,0,8,0
-demo,co.edu.uptc.control,AssetController,390,0,20,0,91,0,19,0,6,0
+demo,co.edu.uptc.control,InvestmentController,641,0,33,0,132,0,26,0,7,0
+demo,co.edu.uptc.control,PortfolioController,570,0,16,0,110,0,16,0,8,0
+demo,co.edu.uptc.control,AssetController,475,0,36,0,113,0,27,0,6,0
 demo,co.edu.uptc.control,MenuController,520,0,63,0,150,0,54,0,10,0
-demo,co.edu.uptc.control,InvestorController,329,0,18,0,83,0,17,0,6,0
+demo,co.edu.uptc.control,InvestorController,353,0,23,0,93,0,21,0,6,0
+demo,co.edu.uptc.util,IdFormats,12,58,9,9,0,9,9,7,0,7
 demo,co.edu.uptc.model,Investment,49,45,0,0,17,17,9,8,9,8
 demo,co.edu.uptc.model,Investor,20,62,0,0,4,26,2,13,2,13
-demo,co.edu.uptc.model,Asset,32,37,0,0,11,15,6,7,6,7
+demo,co.edu.uptc.model,Asset,32,37,0,0,10,15,6,7,6,7

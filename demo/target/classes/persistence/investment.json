@@ -142,5 +142,23 @@
     "purchasePrice": 300000.0,
     "date": "2026-04-06",
     "time": "21:17:57.709175600"
+  },
+  {
+    "id": "INV6",
+    "inversionistId": "I013",
+    "assetId": "A1",
+    "amount": 1.0,
+    "purchasePrice": 2000.0,
+    "date": "2026-04-06",
+    "time": "22:23:16.510316"
+  },
+  {
+    "id": "INV6",
+    "inversionistId": "I013",
+    "assetId": "A1",
+    "amount": 1.0,
+    "purchasePrice": 2000.0,
+    "date": "2026-04-06",
+    "time": "22:23:54.096565"
   }
 ]

@@ -7,6 +7,7 @@ import co.edu.uptc.exception.AssetNotFoundException;
 import co.edu.uptc.model.Asset;
 import co.edu.uptc.model.enums.AssetType;
 import co.edu.uptc.repository.JsonRepository;
+import co.edu.uptc.util.IdFormats;
 
 /**
  * Servicio de gestión de activos financieros: registro, listado y consulta del precio
@@ -35,6 +36,16 @@ public class AssetService {
      * @param volatility volatilidad expresada en porcentaje
      */
     public void createAsset(String id, String name, AssetType assetType, double actualPrice, double volatility) {
+        id = IdFormats.normalizeAssetId(id);
+        if (!IdFormats.isValidAssetId(id)) {
+            throw new IllegalArgumentException("INVALID_ASSET_ID_FORMAT");
+        }
+        if (findById(id) != null) {
+            throw new IllegalArgumentException("DUPLICATE_ASSET_ID");
+        }
+        if (actualPrice < 0 || volatility < 0) {
+            throw new IllegalArgumentException("NEGATIVE_PRICE_OR_VOLATILITY");
+        }
         try {
             repo.save(new Asset(id, name, assetType, actualPrice, volatility));
         } catch (RuntimeException e) {
@@ -71,9 +82,10 @@ public class AssetService {
      */
     public Asset findById(String id) {
         try {
+            String norm = IdFormats.normalizeAssetId(id);
             return repo.findAll()
                     .stream()
-                    .filter(i -> i.getId().equals(id))
+                    .filter(i -> i.getId().equalsIgnoreCase(norm))
                     .findFirst()
                     .orElse(null);
         } catch (RuntimeException e) {
@@ -90,11 +102,18 @@ public class AssetService {
     }
     //Actualizar precio del activo y recalcular rendimientos automáticamente
     public void updAssetPrice(String assetId, double newPrice) {
+        String norm = IdFormats.normalizeAssetId(assetId);
+        if (!IdFormats.isValidAssetId(norm)) {
+            throw new IllegalArgumentException("INVALID_ASSET_ID_FORMAT");
+        }
+        if (newPrice < 0) {
+            throw new IllegalArgumentException("NEGATIVE_PRICE_OR_VOLATILITY");
+        }
         List<Asset> assets = repo.findAll();
         boolean isUpdated = false;
 
         for (Asset asset : assets) {
-            if (asset.getId().equals(assetId)) {
+            if (asset.getId().equalsIgnoreCase(norm)) {
                 asset.setActualPrice(newPrice);
                 isUpdated = true;
                 break;

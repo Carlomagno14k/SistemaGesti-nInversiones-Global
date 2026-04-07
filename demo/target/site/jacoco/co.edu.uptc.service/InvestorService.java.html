@@ -12,6 +12,7 @@ import co.edu.uptc.model.Investment;
 import co.edu.uptc.model.Investor;
 import co.edu.uptc.model.enums.RiskProfile;
 import co.edu.uptc.repository.JsonRepository;
+import co.edu.uptc.util.IdFormats;
 
 /**
  * Servicio de gestión de inversionistas: registro, consulta y actualización del capital
@@ -20,14 +21,14 @@ import co.edu.uptc.repository.JsonRepository;
 public class InvestorService {
     private final JsonRepository&lt;Investor&gt; repo;
 
-<span class="nc" id="L23">    public InvestorService() {</span>
-<span class="nc" id="L24">        Type type = new TypeToken&lt;List&lt;Investor&gt;&gt;() {}.getType();</span>
-<span class="nc" id="L25">        this.repo = new JsonRepository&lt;&gt;(&quot;demo/src/main/resources/persistence/investor.json&quot;, type);</span>
-<span class="nc" id="L26">    }</span>
+<span class="nc" id="L24">    public InvestorService() {</span>
+<span class="nc" id="L25">        Type type = new TypeToken&lt;List&lt;Investor&gt;&gt;() {}.getType();</span>
+<span class="nc" id="L26">        this.repo = new JsonRepository&lt;&gt;(&quot;demo/src/main/resources/persistence/investor.json&quot;, type);</span>
+<span class="nc" id="L27">    }</span>
 
-<span class="fc" id="L28">    public InvestorService(JsonRepository&lt;Investor&gt; repo) {</span>
-<span class="fc" id="L29">        this.repo = repo;</span>
-<span class="fc" id="L30">    }</span>
+<span class="fc" id="L29">    public InvestorService(JsonRepository&lt;Investor&gt; repo) {</span>
+<span class="fc" id="L30">        this.repo = repo;</span>
+<span class="fc" id="L31">    }</span>
     /**
      * Registra un nuevo inversionista con los datos obligatorios (identificador, nombre,
      * correo, capital disponible y perfil de riesgo). La lista de inversiones se inicializa vacía.
@@ -42,36 +43,41 @@ public class InvestorService {
   public void createInvestor(String id, String name, String email, double availableCapital, RiskProfile riskProfile,
                                List&lt;Investment&gt; inversions) {
         try {
+<span class="fc" id="L46">            final String normalizedId = IdFormats.normalizeInvestorId(id);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">            if (!IdFormats.isValidInvestorId(normalizedId)) {</span>
+<span class="nc" id="L48">                throw new IllegalArgumentException(&quot;INVALID_INVESTOR_ID_FORMAT&quot;);</span>
+            }
+
             // 1. Validar que el capital no sea negativo
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">            if (availableCapital &lt; 0) {</span>
-<span class="nc" id="L47">                throw new IllegalArgumentException(&quot;NEGATIVE_CAPITAL&quot;);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">            if (availableCapital &lt; 0) {</span>
+<span class="nc" id="L53">                throw new IllegalArgumentException(&quot;NEGATIVE_CAPITAL&quot;);</span>
             }
 
             // 2. Obtener la lista actual de inversionistas del repositorio
-<span class="fc" id="L51">            List&lt;Investor&gt; currentInvestors = repo.findAll();</span>
+<span class="fc" id="L57">            List&lt;Investor&gt; currentInvestors = repo.findAll();</span>
 
             // 3. Comprobar si ya existe un inversionista con el mismo ID (ignorando mayúsculas)
-<span class="fc" id="L54">            boolean exists = currentInvestors.stream()</span>
-<span class="fc" id="L55">                    .anyMatch(inv -&gt; inv.getId().equalsIgnoreCase(id));</span>
+<span class="fc" id="L60">            boolean exists = currentInvestors.stream()</span>
+<span class="fc" id="L61">                    .anyMatch(inv -&gt; inv.getId().equalsIgnoreCase(normalizedId));</span>
 
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">            if (exists) {</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">            if (exists) {</span>
                 // Lanzamos una excepción con un mensaje específico para identificar el error de duplicado
-<span class="nc" id="L59">                throw new IllegalArgumentException(&quot;ID_ALREADY_EXISTS&quot;);</span>
+<span class="nc" id="L65">                throw new IllegalArgumentException(&quot;ID_ALREADY_EXISTS&quot;);</span>
             }
 
             // 4. Si pasa las validaciones, creamos el objeto y lo guardamos
             // Se inicializa con una lista de inversiones vacía para evitar valores nulos en el JSON
-<span class="fc" id="L64">            Investor newInvestor = new Investor(id, name, email, availableCapital, riskProfile, new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L65">            repo.save(newInvestor);</span>
+<span class="fc" id="L70">            Investor newInvestor = new Investor(normalizedId, name, email, availableCapital, riskProfile, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L71">            repo.save(newInvestor);</span>
 
-<span class="pc" id="L67">        } catch (IllegalArgumentException e) {</span>
+<span class="pc" id="L73">        } catch (IllegalArgumentException e) {</span>
             // Re-lanzamos la excepción (NEGATIVE_CAPITAL o ID_ALREADY_EXISTS)
-<span class="nc" id="L69">            throw e;</span>
-<span class="nc" id="L70">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L75">            throw e;</span>
+<span class="nc" id="L76">        } catch (RuntimeException e) {</span>
             // Capturamos errores inesperados (como problemas de escritura en disco)
-<span class="nc" id="L72">            throw new RuntimeException(&quot;Error al registrar el inversionista en el sistema.&quot;, e);</span>
+<span class="nc" id="L78">            throw new RuntimeException(&quot;Error al registrar el inversionista en el sistema.&quot;, e);</span>
         }
-<span class="fc" id="L74">    }</span>
+<span class="fc" id="L80">    }</span>
 
     /**
      * Obtiene todos los inversionistas almacenados (consulta general).
@@ -80,83 +86,72 @@ public class InvestorService {
      */
     public List&lt;Investor&gt; listInversionists() {
         try {
-<span class="fc" id="L83">            List&lt;Investor&gt; investors = repo.findAll();</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">            return investors != null ? investors : new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L85">        } catch (RuntimeException e) {</span>
-<span class="nc" id="L86">            throw new RuntimeException(&quot;Error trying to list the investors.&quot;, e);</span>
+<span class="fc" id="L89">            List&lt;Investor&gt; investors = repo.findAll();</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            return investors != null ? investors : new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L91">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L92">            throw new RuntimeException(&quot;Error trying to list the investors.&quot;, e);</span>
         }
     }
 
     //Modificar 
     // Método para modificar los datos de un inversionista existente
     public void updateInvestor(Investor updatedInvestor) {
-<span class="fc" id="L93">        List&lt;Investor&gt; investors = repo.findAll();</span>
-<span class="fc" id="L94">        boolean isUpdated = false;</span>
+<span class="fc" id="L99">        List&lt;Investor&gt; investors = repo.findAll();</span>
+<span class="fc" id="L100">        boolean isUpdated = false;</span>
     
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        for (int i = 0; i &lt; investors.size(); i++) {</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">            if (investors.get(i).getId().equals(updatedInvestor.getId())) {</span>
-<span class="fc" id="L98">                investors.set(i, updatedInvestor); // 🔥 reemplazo completo</span>
-<span class="fc" id="L99">                isUpdated = true;</span>
-<span class="fc" id="L100">                break;</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        for (int i = 0; i &lt; investors.size(); i++) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (investors.get(i).getId().equalsIgnoreCase(updatedInvestor.getId())) {</span>
+<span class="fc" id="L104">                investors.set(i, updatedInvestor); // 🔥 reemplazo completo</span>
+<span class="fc" id="L105">                isUpdated = true;</span>
+<span class="fc" id="L106">                break;</span>
             }
         }
     
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (isUpdated) {</span>
-<span class="fc" id="L105">            repo.replaceAll(investors);</span>
-<span class="fc" id="L106">        } else {</span>
-<span class="nc" id="L107">            throw new InvestorNotFoundException(updatedInvestor.getId());</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (isUpdated) {</span>
+<span class="fc" id="L111">            repo.replaceAll(investors);</span>
+<span class="fc" id="L112">        } else {</span>
+<span class="nc" id="L113">            throw new InvestorNotFoundException(updatedInvestor.getId());</span>
         }
-<span class="fc" id="L109">    }</span>
+<span class="fc" id="L115">    }</span>
 
-    public void updateInvestorAtributes(String id, String newName, String newEmail, String newRiskProfile) {
-<span class="nc" id="L112">        List&lt;Investor&gt; investors = repo.findAll();</span>
-<span class="nc" id="L113">        boolean isUpdated = false;</span>
+    public void updateInvestorAtributes(String id, String newName, String newEmail, RiskProfile newRiskProfile) {
+<span class="nc" id="L118">        List&lt;Investor&gt; investors = repo.findAll();</span>
+<span class="nc" id="L119">        boolean isUpdated = false;</span>
     
-<span class="nc bnc" id="L115" title="All 2 branches missed.">        for (Investor investor : investors) {</span>
-<span class="nc bnc" id="L116" title="All 2 branches missed.">            if (investor.getId().equals(id)) {</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        for (Investor investor : investors) {</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">            if (investor.getId().equalsIgnoreCase(id)) {</span>
     
-<span class="nc bnc" id="L118" title="All 4 branches missed.">                if (newName != null &amp;&amp; !newName.trim().isEmpty()) {</span>
-<span class="nc" id="L119">                    investor.setName(newName);</span>
+<span class="nc bnc" id="L124" title="All 4 branches missed.">                if (newName != null &amp;&amp; !newName.trim().isEmpty()) {</span>
+<span class="nc" id="L125">                    investor.setName(newName);</span>
                 }
     
-<span class="nc bnc" id="L122" title="All 4 branches missed.">                if (newEmail != null &amp;&amp; !newEmail.trim().isEmpty()) {</span>
-<span class="nc" id="L123">                    investor.setEmail(newEmail);</span>
+<span class="nc bnc" id="L128" title="All 4 branches missed.">                if (newEmail != null &amp;&amp; !newEmail.trim().isEmpty()) {</span>
+<span class="nc" id="L129">                    investor.setEmail(newEmail);</span>
                 }
+<span class="nc" id="L131">                        investor.setRiskProfile(newRiskProfile);</span>
     
-                // Conversión del String al Enum
-<span class="nc bnc" id="L127" title="All 4 branches missed.">                if (newRiskProfile != null &amp;&amp; !newRiskProfile.trim().isEmpty()) {</span>
-                    try {
-<span class="nc" id="L129">                        RiskProfile parsedRisk = RiskProfile.valueOf(newRiskProfile.trim().toUpperCase());</span>
-<span class="nc" id="L130">                        investor.setRiskProfile(parsedRisk);</span>
-<span class="nc" id="L131">                    } catch (IllegalArgumentException e) {</span>
-<span class="nc" id="L132">                        throw new IllegalArgumentException(</span>
-<span class="nc" id="L133">                            &quot;Error: El perfil de riesgo '&quot; + newRiskProfile + &quot;' no es válido.&quot;</span>
-                        );
-                    }
-                }
-    
-<span class="nc" id="L138">                isUpdated = true;</span>
-<span class="nc" id="L139">                break;</span>
+<span class="nc" id="L133">                isUpdated = true;</span>
+<span class="nc" id="L134">                break;</span>
             }
         }
     
-<span class="nc bnc" id="L143" title="All 2 branches missed.">        if (isUpdated) {</span>
-<span class="nc" id="L144">            repo.replaceAll(investors);</span>
-<span class="nc" id="L145">        } else {</span>
-<span class="nc" id="L146">            throw new InvestorNotFoundException(id);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        if (isUpdated) {</span>
+<span class="nc" id="L139">            repo.replaceAll(investors);</span>
+<span class="nc" id="L140">        } else {</span>
+<span class="nc" id="L141">            throw new InvestorNotFoundException(id);</span>
         }
-<span class="nc" id="L148">    }</span>
+<span class="nc" id="L143">    }</span>
 
 
     //Eliminar 
     public boolean delete(String id) {
-<span class="nc" id="L153">        List&lt;Investor&gt; investors = repo.findAll();</span>
-<span class="nc" id="L154">        boolean beDeleted = investors.removeIf(m -&gt; m.getId().equals(id));</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">        if (beDeleted) {</span>
-<span class="nc" id="L156">            repo.replaceAll(investors);</span>
-<span class="nc" id="L157">            return true;</span>
+<span class="nc" id="L148">        List&lt;Investor&gt; investors = repo.findAll();</span>
+<span class="nc" id="L149">        boolean beDeleted = investors.removeIf(m -&gt; m.getId().equalsIgnoreCase(id));</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        if (beDeleted) {</span>
+<span class="nc" id="L151">            repo.replaceAll(investors);</span>
+<span class="nc" id="L152">            return true;</span>
         } else {
-<span class="nc" id="L159">            return false;</span>
+<span class="nc" id="L154">            return false;</span>
         }
     }
 
@@ -168,13 +163,13 @@ public class InvestorService {
      */
     public Investor findById(String id) {
         try {
-<span class="fc" id="L171">            return repo.findAll()</span>
-<span class="fc" id="L172">                    .stream()</span>
-<span class="fc" id="L173">                    .filter(i -&gt; i.getId().equals(id))</span>
-<span class="fc" id="L174">                    .findFirst()</span>
-<span class="fc" id="L175">                    .orElse(null);</span>
-<span class="nc" id="L176">        } catch (RuntimeException e) {</span>
-<span class="nc" id="L177">            throw new RuntimeException(&quot;Error trying to find the inversionist by id.&quot;, e);</span>
+<span class="fc" id="L166">            return repo.findAll()</span>
+<span class="fc" id="L167">                    .stream()</span>
+<span class="fc" id="L168">                    .filter(i -&gt; i.getId().equalsIgnoreCase(IdFormats.normalizeInvestorId(id)))</span>
+<span class="fc" id="L169">                    .findFirst()</span>
+<span class="fc" id="L170">                    .orElse(null);</span>
+<span class="nc" id="L171">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L172">            throw new RuntimeException(&quot;Error trying to find the inversionist by id.&quot;, e);</span>
         }
     }
 
@@ -189,24 +184,24 @@ public class InvestorService {
      */
     public void updateCapital(String id, double purchaseValue) {
         try {
-<span class="fc" id="L192">            List&lt;Investor&gt; investors = repo.findAll();</span>
+<span class="fc" id="L187">            List&lt;Investor&gt; investors = repo.findAll();</span>
 
-<span class="fc bfc" id="L194" title="All 2 branches covered.">            for (Investor inv : investors) {</span>
-<span class="pc bpc" id="L195" title="1 of 2 branches missed.">                if (inv.getId().equals(id)) {</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">                    if (inv.getAvailableCapital() &lt; purchaseValue) {</span>
-<span class="fc" id="L197">                        throw new InsufficientCapitalException(&quot;Capital insuficiente para completar la operación.&quot;);</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">            for (Investor inv : investors) {</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">                if (inv.getId().equalsIgnoreCase(IdFormats.normalizeInvestorId(id))) {</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">                    if (inv.getAvailableCapital() &lt; purchaseValue) {</span>
+<span class="fc" id="L192">                        throw new InsufficientCapitalException(&quot;Capital insuficiente para completar la operación.&quot;);</span>
                     }
-<span class="fc" id="L199">                    inv.setAvailableCapital(inv.getAvailableCapital() - purchaseValue);</span>
-<span class="fc" id="L200">                    repo.replaceAll(investors);</span>
-<span class="fc" id="L201">                    return;</span>
+<span class="fc" id="L194">                    inv.setAvailableCapital(inv.getAvailableCapital() - purchaseValue);</span>
+<span class="fc" id="L195">                    repo.replaceAll(investors);</span>
+<span class="fc" id="L196">                    return;</span>
                 }
             }
 
-<span class="fc" id="L205">            throw new InvestorNotFoundException(&quot;Investor not found with that id.&quot;);</span>
-<span class="fc" id="L206">        } catch (InsufficientCapitalException | InvestorNotFoundException e) {</span>
-<span class="fc" id="L207">            throw e;</span>
-<span class="nc" id="L208">        } catch (RuntimeException e) {</span>
-<span class="nc" id="L209">            throw new RuntimeException(&quot;Error trying to update the available capital.&quot;, e);</span>
+<span class="fc" id="L200">            throw new InvestorNotFoundException(&quot;Investor not found with that id.&quot;);</span>
+<span class="fc" id="L201">        } catch (InsufficientCapitalException | InvestorNotFoundException e) {</span>
+<span class="fc" id="L202">            throw e;</span>
+<span class="nc" id="L203">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L204">            throw new RuntimeException(&quot;Error trying to update the available capital.&quot;, e);</span>
         }
     }
 
@@ -219,13 +214,13 @@ public class InvestorService {
      * @throws InvestorNotFoundException si no existe un inversionista con el identificador dado
      */
     public RiskProfile getRiskProfile(String id) {
-<span class="fc" id="L222">        Investor inv = findById(id);</span>
+<span class="fc" id="L217">        Investor inv = findById(id);</span>
 
-<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (inv == null) {</span>
-<span class="fc" id="L225">            throw new InvestorNotFoundException(&quot;Investor not found with that id.&quot;);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        if (inv == null) {</span>
+<span class="fc" id="L220">            throw new InvestorNotFoundException(&quot;Investor not found with that id.&quot;);</span>
         }
 
-<span class="fc" id="L228">        return inv.getRiskProfile();</span>
+<span class="fc" id="L223">        return inv.getRiskProfile();</span>
     }
 
     /**
@@ -237,13 +232,13 @@ public class InvestorService {
      * @throws InvestorNotFoundException si no existe un inversionista con el identificador dado
      */
     public double getAvailableCapital(String id){
-<span class="fc" id="L240">        Investor inv = findById(id);</span>
+<span class="fc" id="L235">        Investor inv = findById(id);</span>
 
-<span class="fc bfc" id="L242" title="All 2 branches covered.">        if (inv == null) {</span>
-<span class="fc" id="L243">            throw new InvestorNotFoundException(&quot;Inversionist not found with that id.&quot;);</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        if (inv == null) {</span>
+<span class="fc" id="L238">            throw new InvestorNotFoundException(&quot;Inversionist not found with that id.&quot;);</span>
         }
 
-<span class="fc" id="L246">        return inv.getAvailableCapital();</span>
+<span class="fc" id="L241">        return inv.getAvailableCapital();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

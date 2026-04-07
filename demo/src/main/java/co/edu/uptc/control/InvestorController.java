@@ -5,7 +5,6 @@ import java.util.List;
 
 import co.edu.uptc.exception.InvestorNotFoundException;
 import co.edu.uptc.exception.OperationCancelledException;
-import co.edu.uptc.model.Investment;
 import co.edu.uptc.model.Investor;
 import co.edu.uptc.model.enums.RiskProfile;
 import co.edu.uptc.service.InvestorService;
@@ -53,23 +52,25 @@ public void handleCreateInvestor() {
         investorService.createInvestor(id, name, email, capital, riskProfile, new ArrayList<>());
         view.showMessageByKey("msg.success.investorCreated");
 
-  } catch (IllegalArgumentException e) {
-    // Manejo de errores de validación específicos
-    switch (e.getMessage()) {
-        case "ID_ALREADY_EXISTS":
-            view.showMessageByKey("msg.error.idAlreadyExists");
-            break;
-        case "NEGATIVE_CAPITAL":
-            view.showMessageByKey("msg.error.negativeCapital");
-            break;
-        case "INVALID_RISK":
-            view.showMessageByKey("msg.error.invalidRisk");
-            break;
-        default:
-            view.printText(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            switch (e.getMessage()) {
+                case "ID_ALREADY_EXISTS":
+                    view.showMessageByKey("msg.error.idAlreadyExists");
+                    break;
+                case "NEGATIVE_CAPITAL":
+                    view.showMessageByKey("msg.error.negativeCapital");
+                    break;
+                case "INVALID_RISK":
+                    view.showMessageByKey("msg.error.invalidRisk");
+                    break;
+                case "INVALID_INVESTOR_ID_FORMAT":
+                    view.showMessageByKey("msg.error.invalidInvestorIdFormat");
+                    break;
+                default:
+                    view.printText(e.getMessage());
+            }
+        }
     }
-}
-}
     /**
      * Maneja el proceso de inicio de sesión de un inversionista.
      * @return El ID del inversionista si el login es exitoso, o null si falla/cancela.

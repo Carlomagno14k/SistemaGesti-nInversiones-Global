@@ -10,7 +10,7 @@
     "id": "A2",
     "name": "Acciones Ecopetrol",
     "assetType": "STOCK",
-    "actualPrice": 2500.5,
+    "actualPrice": 3000.0,
     "volatility": 0.15
   },
   {
@@ -75,5 +75,12 @@
     "assetType": "CRYPTO",
     "actualPrice": 6000.0,
     "volatility": 0.1
+  },
+  {
+    "id": "A13",
+    "name": "NFT de monos",
+    "assetType": "NFT",
+    "actualPrice": 20000.0,
+    "volatility": 0.6
   }
 ]

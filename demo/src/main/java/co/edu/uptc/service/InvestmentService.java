@@ -14,6 +14,7 @@ import co.edu.uptc.model.Investment;
 import co.edu.uptc.model.enums.AssetType;
 import co.edu.uptc.model.enums.RiskProfile;
 import co.edu.uptc.repository.JsonRepository;
+import co.edu.uptc.util.IdFormats;
 
 /**
  * Servicio de inversiones individuales: creación con validaciones de negocio (capital y perfil de
@@ -47,14 +48,40 @@ public class InvestmentService {
      * @param time hora de la operación
      * @param availableCapital capital disponible del inversionista en el momento de validar (debe ser ≥ inversión inicial)
      * @param riskProfile perfil de riesgo del inversionista
-     * @param assetType tipo de activo, usado para la validación de riesgo
      * @throws InsufficientCapitalException si el capital es insuficiente
      * @throws IncompatibleRiskProfileException si el perfil de riesgo no permite el activo
      */
     public Investment createInvestment(String id, String inversionistId, String assetId, double amount, double purchasePrice,
-            LocalDate date, LocalTime time, double availableCapital, RiskProfile riskProfile, AssetType assetType){
-        
-        purchasePrice = calculatePurchasePrice(assetService.findById(assetId).getActualPrice(), amount);
+            LocalDate date, LocalTime time, double availableCapital, RiskProfile riskProfile){
+
+        id = IdFormats.normalizeInvestmentId(id);
+        if (!IdFormats.isValidInvestmentId(id)) {
+            throw new IllegalArgumentException("INVALID_INVESTMENT_ID_FORMAT");
+        }
+        if (investmentIdExists(id)) {
+            throw new IllegalArgumentException("DUPLICATE_INVESTMENT_ID");
+        }
+
+        String normInvestor = IdFormats.normalizeInvestorId(inversionistId);
+        if (!IdFormats.isValidInvestorId(normInvestor)) {
+            throw new IllegalArgumentException("INVALID_INVESTOR_ID_FORMAT");
+        }
+
+        String normAsset = IdFormats.normalizeAssetId(assetId);
+        if (!IdFormats.isValidAssetId(normAsset)) {
+            throw new IllegalArgumentException("INVALID_ASSET_ID_FORMAT");
+        }
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("INVALID_AMOUNT");
+        }
+
+        Asset assetRef = assetService.findById(normAsset);
+        if (assetRef == null) {
+            throw new IllegalArgumentException("ASSET_NOT_FOUND");
+        }
+
+        purchasePrice = calculatePurchasePrice(assetRef.getActualPrice(), amount);
         
         System.out.println("Capital disponible recibido: " + availableCapital);
         System.out.println("Precio total inversión: " + purchasePrice);
@@ -63,16 +90,21 @@ public class InvestmentService {
             throw new InsufficientCapitalException("Capital insuficiente para registrar la inversión.");
         }
 
-        // validar riesgo
-        validateRiskProfile(riskProfile, assetType);
+        // validar riesgo según el tipo real del activo
+        validateRiskProfile(riskProfile, assetRef.getAssetType());
 
-        Investment investment = new Investment(id, inversionistId, assetId, amount, purchasePrice, date, time);
+        Investment investment = new Investment(id, normInvestor, normAsset, amount, purchasePrice, date, time);
         try {
             repo.save(investment);
         } catch (RuntimeException e) {
             throw new RuntimeException("Error al guardar la inversión en persistencia.", e);
         }
         return investment;
+    }
+
+    private boolean investmentIdExists(String normalizedId) {
+        return repo.findAll().stream()
+                .anyMatch(i -> i.getId().equalsIgnoreCase(normalizedId));
     }
 
     /**

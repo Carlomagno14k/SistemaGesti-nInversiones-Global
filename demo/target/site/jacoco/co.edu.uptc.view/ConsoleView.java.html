@@ -69,7 +69,7 @@ public class ConsoleView {
 <span class="nc bnc" id="L69" title="All 2 branches missed.">        for (var entry : list) {</span>
 <span class="nc" id="L70">            System.out.println(i + &quot;. &quot; + entry.getKey() + &quot; -&gt; &quot; + entry.getValue());</span>
 <span class="nc" id="L71">            i++;</span>
-        }
+<span class="nc" id="L72">        }</span>
 <span class="nc" id="L73">    }</span>
 
     public void showExportSuccess(String fileName) {
@@ -98,18 +98,18 @@ public class ConsoleView {
 <span class="nc" id="L98">        return input;</span>
     }
     public double readDoubleInput(String messageKey) {
-<span class="nc" id="L101">        while (true) {</span>
+        while (true) {
             try {
 <span class="nc" id="L103">                String input = readStringInput(messageKey); // Reutilizamos readStringInput que ya tiene la lógica de la &quot;X&quot;</span>
 <span class="nc" id="L104">                return Double.parseDouble(input);</span>
 <span class="nc" id="L105">            } catch (NumberFormatException e) {</span>
 <span class="nc" id="L106">                System.out.println(getLocalizedText(&quot;msg.error.invalidNumber&quot;));</span>
-            }
+<span class="nc" id="L107">            }</span>
         }
     }
 
     public int readIntInput(String promptKey) {
-<span class="nc" id="L112">        while (true) {</span>
+        while (true) {
             try {
 <span class="nc" id="L114">                System.out.print(getLocalizedText(promptKey) + &quot; &quot;);</span>
 <span class="nc" id="L115">                int input = scanner.nextInt();</span>
@@ -118,7 +118,7 @@ public class ConsoleView {
 <span class="nc" id="L118">            } catch (InputMismatchException e) {</span>
 <span class="nc" id="L119">                System.out.println(getLocalizedText(&quot;msg.error.invalid&quot;));</span>
 <span class="nc" id="L120">                scanner.nextLine(); // Limpiar la basura del buffer</span>
-            }
+<span class="nc" id="L121">            }</span>
         }
     }
 

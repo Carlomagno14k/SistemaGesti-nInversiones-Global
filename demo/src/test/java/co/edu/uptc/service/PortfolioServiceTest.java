@@ -43,7 +43,7 @@ class PortfolioServiceTest {
         InvestmentService inversionService = new InvestmentService(invRepo, assetService);
         portfolioService = new PortfolioService(inversionService, assetService, null);
 
-        assetService.createAsset("A1", "Activo prueba", AssetType.BOND, 10.0, 0.0);
+        assetService.createAsset("A001", "Activo prueba", AssetType.BOND, 10.0, 0.0);
     }
 
     @Test
@@ -57,8 +57,8 @@ class PortfolioServiceTest {
 
     @Test
     void calculateEarningsByPeriod_sumsOnlyInversionsInRange() {
-        Investment inside = new Investment("1", "inv", "A1", 2, 4.0, LocalDate.of(2026, 1, 15), LocalTime.NOON);
-        Investment outside = new Investment("2", "inv", "A1", 1, 1.0, LocalDate.of(2025, 12, 1), LocalTime.NOON);
+        Investment inside = new Investment("INV001", "I001", "A001", 2, 4.0, LocalDate.of(2026, 1, 15), LocalTime.NOON);
+        Investment outside = new Investment("INV002", "I001", "A001", 1, 1.0, LocalDate.of(2025, 12, 1), LocalTime.NOON);
 
         double total = portfolioService.calculateEarningsByPeriod(
                 List.of(inside, outside),
@@ -70,7 +70,7 @@ class PortfolioServiceTest {
 
     @Test
     void calculateEarningsByPeriod_returnsZeroWhenNoMatches() {
-        Investment outside = new Investment("2", "inv", "A1", 1, 1.0, LocalDate.of(2025, 12, 1), LocalTime.NOON);
+        Investment outside = new Investment("INV002", "I001", "A001", 1, 1.0, LocalDate.of(2025, 12, 1), LocalTime.NOON);
 
         double total = portfolioService.calculateEarningsByPeriod(
                 List.of(outside),
@@ -82,43 +82,43 @@ class PortfolioServiceTest {
 
     @Test
     void calculateTotalInvested_emptyPortfolio_returnsZero() {
-        Investor inv = new Investor("i1", "N", "e", 1000.0, RiskProfile.MODERATE, new ArrayList<>());
+        Investor inv = new Investor("I001", "N", "e", 1000.0, RiskProfile.MODERATE, new ArrayList<>());
         assertEquals(0.0, portfolioService.calculateTotalInvested(inv), 0.0001);
     }
 
     @Test
     void calculateTotalInvested_sumsPurchasePrices() {
         List<Investment> list = List.of(
-                new Investment("1", "i1", "A1", 2, 100.0, LocalDate.of(2026, 3, 1), LocalTime.NOON),
-                new Investment("2", "i1", "A1", 1, 50.0, LocalDate.of(2026, 3, 2), LocalTime.NOON));
-        Investor inv = new Investor("i1", "N", "e", 1000.0, RiskProfile.MODERATE, list);
+                new Investment("INV010", "I001", "A001", 2, 100.0, LocalDate.of(2026, 3, 1), LocalTime.NOON),
+                new Investment("INV011", "I001", "A001", 1, 50.0, LocalDate.of(2026, 3, 2), LocalTime.NOON));
+        Investor inv = new Investor("I001", "N", "e", 1000.0, RiskProfile.MODERATE, list);
         assertEquals(150.0, portfolioService.calculateTotalInvested(inv), 0.0001);
     }
 
     @Test
     void calculateCurrentPortfolioValue_usesAssetPrices() {
         List<Investment> list = List.of(
-                new Investment("1", "i1", "A1", 3, 30.0, LocalDate.now(), LocalTime.NOON));
-        Investor inv = new Investor("i1", "N", "e", 1000.0, RiskProfile.MODERATE, list);
+                new Investment("INV012", "I001", "A001", 3, 30.0, LocalDate.now(), LocalTime.NOON));
+        Investor inv = new Investor("I001", "N", "e", 1000.0, RiskProfile.MODERATE, list);
         assertEquals(30.0, portfolioService.calculateCurrentPortfolioValue(inv), 0.0001);
     }
 
     @Test
     void calculateYieldPercentage_reflectsGain() {
-        assetService.createAsset("G1", "Gain", AssetType.BOND, 100.0, 0.0);
+        assetService.createAsset("A002", "Gain", AssetType.BOND, 100.0, 0.0);
         List<Investment> list = List.of(
-                new Investment("1", "i1", "G1", 1, 50.0, LocalDate.now(), LocalTime.NOON));
-        Investor inv = new Investor("i1", "N", "e", 1000.0, RiskProfile.MODERATE, list);
+                new Investment("INV013", "I001", "A002", 1, 50.0, LocalDate.now(), LocalTime.NOON));
+        Investor inv = new Investor("I001", "N", "e", 1000.0, RiskProfile.MODERATE, list);
         assertEquals(100.0, portfolioService.calculateYieldPercentage(inv), 0.0001);
     }
 
     @Test
     void calculatePortfolioRisk_weightedByValueAndVolatility() {
-        assetService.createAsset("R1", "Risky", AssetType.STOCK, 50.0, 0.2);
+        assetService.createAsset("A003", "Risky", AssetType.STOCK, 50.0, 0.2);
         List<Investment> list = List.of(
-                new Investment("a", "i1", "A1", 2, 20.0, LocalDate.now(), LocalTime.NOON),
-                new Investment("b", "i1", "R1", 1, 50.0, LocalDate.now(), LocalTime.NOON));
-        Investor investor = new Investor("i1", "N", "e", 1000.0, RiskProfile.MODERATE, list);
+                new Investment("INV014", "I001", "A001", 2, 20.0, LocalDate.now(), LocalTime.NOON),
+                new Investment("INV015", "I001", "A003", 1, 50.0, LocalDate.now(), LocalTime.NOON));
+        Investor investor = new Investor("I001", "N", "e", 1000.0, RiskProfile.MODERATE, list);
         double expected = (20.0 * 0.0 + 50.0 * 0.2) / (20.0 + 50.0);
         assertEquals(expected, portfolioService.calculatePortfolioRisk(investor), 0.0001);
     }
@@ -128,7 +128,7 @@ class PortfolioServiceTest {
         Type assetListType = new TypeToken<List<Asset>>() {}.getType();
         JsonRepository<Asset> assetRepo = new JsonRepository<>(tempDir.resolve("assets_top5.json").toString(), assetListType);
         AssetService as = new AssetService(assetRepo);
-        as.createAsset("TOP_A1", "A", AssetType.BOND, 100.0, 0.0);
+        as.createAsset("A004", "A", AssetType.BOND, 100.0, 0.0);
 
         Type invListType = new TypeToken<List<Investment>>() {}.getType();
         JsonRepository<Investment> invRepo = new JsonRepository<>(tempDir.resolve("inv_top5.json").toString(), invListType);
@@ -140,21 +140,21 @@ class PortfolioServiceTest {
 
         PortfolioService ps = new PortfolioService(invSvc, as, investorService);
 
-        investorService.createInvestor("LOW", "Low", "l@test.com", 10000.0, RiskProfile.MODERATE, Collections.emptyList());
-        Investor low = investorService.findById("LOW");
+        investorService.createInvestor("I010", "Low", "l@test.com", 10000.0, RiskProfile.MODERATE, Collections.emptyList());
+        Investor low = investorService.findById("I010");
         low.setInvestments(List.of(
-                new Investment("i1", "LOW", "TOP_A1", 1, 100.0, LocalDate.now(), LocalTime.NOON)));
+                new Investment("INV050", "I010", "A004", 1, 100.0, LocalDate.now(), LocalTime.NOON)));
         investorService.updateInvestor(low);
 
-        investorService.createInvestor("HIGH", "High", "h@test.com", 10000.0, RiskProfile.MODERATE, Collections.emptyList());
-        Investor high = investorService.findById("HIGH");
+        investorService.createInvestor("I011", "High", "h@test.com", 10000.0, RiskProfile.MODERATE, Collections.emptyList());
+        Investor high = investorService.findById("I011");
         high.setInvestments(List.of(
-                new Investment("i2", "HIGH", "TOP_A1", 1, 50.0, LocalDate.now(), LocalTime.NOON)));
+                new Investment("INV051", "I011", "A004", 1, 50.0, LocalDate.now(), LocalTime.NOON)));
         investorService.updateInvestor(high);
 
         List<Investor> top = ps.getTop5InvestorsByYield();
         assertEquals(2, top.size());
-        assertEquals("HIGH", top.get(0).getId());
-        assertEquals("LOW", top.get(1).getId());
+        assertEquals("I011", top.get(0).getId());
+        assertEquals("I010", top.get(1).getId());
     }
 }

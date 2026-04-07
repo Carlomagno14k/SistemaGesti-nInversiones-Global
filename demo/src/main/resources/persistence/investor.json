@@ -1,23 +1,5 @@
 [
   {
-    "id": "I1",
-    "name": "Investor 1",
-    "email": "investor1@email.com",
-    "availableCapital": 10000.0,
-    "riskProfile": "MODERATE",
-    "investments": [
-      {
-        "id": "INV1",
-        "inversionistId": "I1",
-        "assetId": "A1",
-        "amount": 5.0,
-        "purchasePrice": 5000.0,
-        "date": "2024-01-10",
-        "time": "10:30"
-      }
-    ]
-  },
-  {
     "id": "I2",
     "name": "Investor 2",
     "email": "investor2@email.com",
@@ -182,8 +164,8 @@
   {
     "id": "I013",
     "name": "Juan David Cardenas",
-    "email": "juandavid@gmail.com",
-    "availableCapital": 1678115.0,
+    "email": "juandacardenas@gmail.com",
+    "availableCapital": 1674115.0,
     "riskProfile": "CONSERVATIVE",
     "investments": [
       {
@@ -221,7 +203,33 @@
         "purchasePrice": 300000.0,
         "date": "2026-04-06",
         "time": "21:17:57.709175600"
+      },
+      {
+        "id": "INV6",
+        "inversionistId": "I013",
+        "assetId": "A1",
+        "amount": 1.0,
+        "purchasePrice": 2000.0,
+        "date": "2026-04-06",
+        "time": "22:23:16.510316"
+      },
+      {
+        "id": "INV6",
+        "inversionistId": "I013",
+        "assetId": "A1",
+        "amount": 1.0,
+        "purchasePrice": 2000.0,
+        "date": "2026-04-06",
+        "time": "22:23:54.096565"
       }
     ]
+  },
+  {
+    "id": "INV013",
+    "name": "Carlos",
+    "email": "Carlos@gmail.com",
+    "availableCapital": 450000.0,
+    "riskProfile": "MODERATE",
+    "investments": []
   }
 ]
