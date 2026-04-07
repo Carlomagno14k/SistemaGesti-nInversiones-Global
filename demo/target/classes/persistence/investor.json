@@ -5,17 +5,14 @@
     "email": "investor1@email.com",
     "availableCapital": 10000.0,
     "riskProfile": "CONSERVATIVE",
-    "investments": [
-      {
-        "id": "INV1",
-        "inversionistId": "I1",
-        "assetId": "A1",
-        "amount": 5.0,
-        "purchasePrice": 5000.0,
-        "date": "2024-01-10",
-        "time": "10:30"
-      }
-    ]
+    "investments": [{
+      "id": "INV1",
+      "inversionistId": "I1",
+      "assetId": "A1",
+      "amount": 5,
+      "purchasePrice": 5000,
+      "date": "2024-01-10",
+      "time": "10:30"}]
   },
   {
     "id": "I2",
@@ -23,7 +20,14 @@
     "email": "investor2@email.com",
     "availableCapital": 15000.0,
     "riskProfile": "MODERATE",
-    "investments": []
+    "investments": [{
+      "id": "INV2",
+      "inversionistId": "I2",
+      "assetId": "A2",
+      "amount": 3,
+      "purchasePrice": 7500,
+      "date": "2024-01-12",
+      "time": "11:00"}]
   },
   {
     "id": "I3",
@@ -31,7 +35,14 @@
     "email": "investor3@email.com",
     "availableCapital": 20000.0,
     "riskProfile": "AGGRESSIVE",
-    "investments": []
+    "investments": [{
+      "id": "INV3",
+      "inversionistId": "I3",
+      "assetId": "A3",
+      "amount": 10,
+      "purchasePrice": 4200,
+      "date": "2024-01-15",
+      "time": "09:45"}]
   },
   {
     "id": "I4",
@@ -39,7 +50,14 @@
     "email": "investor4@email.com",
     "availableCapital": 12000.0,
     "riskProfile": "CONSERVATIVE",
-    "investments": []
+    "investments": [  {
+      "id": "INV4",
+      "inversionistId": "I4",
+      "assetId": "A4",
+      "amount": 1,
+      "purchasePrice": 150000,
+      "date": "2024-01-18",
+      "time": "14:20"}]
   },
   {
     "id": "I5",
@@ -47,7 +65,14 @@
     "email": "investor5@email.com",
     "availableCapital": 18000.0,
     "riskProfile": "MODERATE",
-    "investments": []
+    "investments": [{
+      "id": "INV5",
+      "inversionistId": "I5",
+      "assetId": "A5",
+      "amount": 1000,
+      "purchasePrice": 1000,
+      "date": "2024-01-20",
+      "time": "08:15"}]
   },
   {
     "id": "I6",
@@ -55,7 +80,14 @@
     "email": "investor6@email.com",
     "availableCapital": 25000.0,
     "riskProfile": "AGGRESSIVE",
-    "investments": []
+    "investments": [ {
+      "id": "INV6",
+      "inversionistId": "I6",
+      "assetId": "A6",
+      "amount": 1,
+      "purchasePrice": 65000,
+      "date": "2024-01-22",
+      "time": "16:40"}]
   },
   {
     "id": "I7",
@@ -63,7 +95,14 @@
     "email": "investor7@email.com",
     "availableCapital": 9000.0,
     "riskProfile": "CONSERVATIVE",
-    "investments": []
+    "investments": [{
+      "id": "INV7",
+      "inversionistId": "I7",
+      "assetId": "A7",
+      "amount": 2,
+      "purchasePrice": 6000,
+      "date": "2024-01-25",
+      "time": "13:10"}]
   },
   {
     "id": "I8",
@@ -71,7 +110,14 @@
     "email": "investor8@email.com",
     "availableCapital": 22000.0,
     "riskProfile": "MODERATE",
-    "investments": []
+    "investments": [{
+      "id": "INV8",
+      "inversionistId": "I8",
+      "assetId": "A8",
+      "amount": 5,
+      "purchasePrice": 6000,
+      "date": "2024-01-28",
+      "time": "10:50"}]
   },
   {
     "id": "I9",
@@ -79,7 +125,14 @@
     "email": "investor9@email.com",
     "availableCapital": 30000.0,
     "riskProfile": "AGGRESSIVE",
-    "investments": []
+    "investments": [{
+      "id": "INV9",
+      "inversionistId": "I9",
+      "assetId": "A9",
+      "amount": 10,
+      "purchasePrice": 1800,
+      "date": "2024-02-01",
+      "time": "12:00"}]
   },
   {
     "id": "I10",
@@ -87,319 +140,14 @@
     "email": "investor10@email.com",
     "availableCapital": 11000.0,
     "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I11",
-    "name": "Investor 11",
-    "email": "investor11@email.com",
-    "availableCapital": 14000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I12",
-    "name": "Investor 12",
-    "email": "investor12@email.com",
-    "availableCapital": 27000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I13",
-    "name": "Investor 13",
-    "email": "investor13@email.com",
-    "availableCapital": 8000.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I14",
-    "name": "Investor 14",
-    "email": "investor14@email.com",
-    "availableCapital": 19000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I15",
-    "name": "Investor 15",
-    "email": "investor15@email.com",
-    "availableCapital": 32000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I16",
-    "name": "Investor 16",
-    "email": "investor16@email.com",
-    "availableCapital": 10000.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I17",
-    "name": "Investor 17",
-    "email": "investor17@email.com",
-    "availableCapital": 21000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I18",
-    "name": "Investor 18",
-    "email": "investor18@email.com",
-    "availableCapital": 35000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I19",
-    "name": "Investor 19",
-    "email": "investor19@email.com",
-    "availableCapital": 9500.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I20",
-    "name": "Investor 20",
-    "email": "investor20@email.com",
-    "availableCapital": 23000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I21",
-    "name": "Investor 21",
-    "email": "investor21@email.com",
-    "availableCapital": 40000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I22",
-    "name": "Investor 22",
-    "email": "investor22@email.com",
-    "availableCapital": 10500.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I23",
-    "name": "Investor 23",
-    "email": "investor23@email.com",
-    "availableCapital": 26000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I24",
-    "name": "Investor 24",
-    "email": "investor24@email.com",
-    "availableCapital": 37000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I25",
-    "name": "Investor 25",
-    "email": "investor25@email.com",
-    "availableCapital": 9800.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I26",
-    "name": "Investor 26",
-    "email": "investor26@email.com",
-    "availableCapital": 15000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I27",
-    "name": "Investor 27",
-    "email": "investor27@email.com",
-    "availableCapital": 28000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I28",
-    "name": "Investor 28",
-    "email": "investor28@email.com",
-    "availableCapital": 8700.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I29",
-    "name": "Investor 29",
-    "email": "investor29@email.com",
-    "availableCapital": 19500.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I30",
-    "name": "Investor 30",
-    "email": "investor30@email.com",
-    "availableCapital": 31000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I31",
-    "name": "Investor 31",
-    "email": "investor31@email.com",
-    "availableCapital": 10200.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I32",
-    "name": "Investor 32",
-    "email": "investor32@email.com",
-    "availableCapital": 24000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I33",
-    "name": "Investor 33",
-    "email": "investor33@email.com",
-    "availableCapital": 33000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I34",
-    "name": "Investor 34",
-    "email": "investor34@email.com",
-    "availableCapital": 8900.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I35",
-    "name": "Investor 35",
-    "email": "investor35@email.com",
-    "availableCapital": 20000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I36",
-    "name": "Investor 36",
-    "email": "investor36@email.com",
-    "availableCapital": 36000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I37",
-    "name": "Investor 37",
-    "email": "investor37@email.com",
-    "availableCapital": 9500.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I38",
-    "name": "Investor 38",
-    "email": "investor38@email.com",
-    "availableCapital": 21000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I39",
-    "name": "Investor 39",
-    "email": "investor39@email.com",
-    "availableCapital": 39000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I40",
-    "name": "Investor 40",
-    "email": "investor40@email.com",
-    "availableCapital": 12000.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I41",
-    "name": "Investor 41",
-    "email": "investor41@email.com",
-    "availableCapital": 18000.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I42",
-    "name": "Investor 42",
-    "email": "investor42@email.com",
-    "availableCapital": 34000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I43",
-    "name": "Investor 43",
-    "email": "investor43@email.com",
-    "availableCapital": 9700.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I44",
-    "name": "Investor 44",
-    "email": "investor44@email.com",
-    "availableCapital": 22500.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I45",
-    "name": "Investor 45",
-    "email": "investor45@email.com",
-    "availableCapital": 41000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I46",
-    "name": "Investor 46",
-    "email": "investor46@email.com",
-    "availableCapital": 11000.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
-  },
-  {
-    "id": "I47",
-    "name": "Investor 47",
-    "email": "investor47@email.com",
-    "availableCapital": 20500.0,
-    "riskProfile": "MODERATE",
-    "investments": []
-  },
-  {
-    "id": "I48",
-    "name": "Investor 48",
-    "email": "investor48@email.com",
-    "availableCapital": 37000.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
-  },
-  {
-    "id": "I49",
-    "name": "Investor 49",
-    "email": "investor49@email.com",
-    "availableCapital": 8800.0,
-    "riskProfile": "CONSERVATIVE",
-    "investments": []
+    "investments": [ {
+      "id": "INV10",
+      "inversionistId": "I10",
+      "assetId": "A10",
+      "amount": 2,
+      "purchasePrice": 6400,
+      "date": "2024-02-03",
+      "time": "15:30"}]
   },
   {
     "id": "I013",
@@ -436,13 +184,5 @@
         "time": "20:49:39.881376700"
       }
     ]
-  },
-  {
-    "id": "INV67",
-    "name": "Inversionista 67",
-    "email": "67",
-    "availableCapital": 67.0,
-    "riskProfile": "AGGRESSIVE",
-    "investments": []
   }
 ]
